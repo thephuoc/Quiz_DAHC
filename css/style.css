@@ -955,12 +955,14 @@ body {
 
     .navigation-buttons {
         flex-direction: row;
-        gap: 10px;
+        gap: 8px;
+        padding: 12px;
     }
 
     .btn-nav {
-        padding: 12px 25px;
-        font-size: 13px;
+        padding: 10px 18px;
+        font-size: 12px;
+        letter-spacing: 0.5px;
     }
 
     .result-container {
@@ -1072,5 +1074,16 @@ body {
     .grid-item {
         max-width: 30px;
         font-size: 11px;
+    }
+
+    .navigation-buttons {
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .btn-nav {
+        padding: 9px 14px;
+        font-size: 11px;
+        letter-spacing: 0.3px;
     }
 }
