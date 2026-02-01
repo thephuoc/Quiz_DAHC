@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Thi Trắc Nghiệm - DAHC</title>
+    <meta name="description" content="Hệ thống thi trắc nghiệm trực tuyến dành cho nhân viên công ty">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo-icon">📝</div>
+                <h1>Hệ Thống Thi Trắc Nghiệm</h1>
+                <p class="subtitle">Đăng nhập để bắt đầu làm bài thi</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="fullName">
+                        <span class="icon">👤</span>
+                        Họ và Tên
+                    </label>
+                    <input type="text" id="fullName" name="fullName" required placeholder="Nhập họ và tên đầy đủ">
+                </div>
+                <div class="form-group">
+                    <label for="birthDate">
+                        <span class="icon">📅</span>
+                        Ngày sinh
+                    </label>
+                    <input type="date" id="birthDate" name="birthDate" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span class="icon">🏢</span>
+                        Đơn vị
+                    </label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="department" value="PXVH" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">PXVH</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="department" value="PXSC">
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">PXSC</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-start">
+                    <span>Bắt Đầu Thi</span>
+                    <span class="icon">▶</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="screen">
+        <header class="quiz-header">
+            <div class="header-left">
+                <span class="exam-icon">📋</span>
+                <span class="exam-code" id="examCode">BÀI THI TRẮC NGHIỆM</span>
+            </div>
+            <div class="header-center">
+                <div class="timer-container">
+                    <span class="timer-icon">⏱</span>
+                    <span class="timer" id="timer">20:00</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="user-name" id="userName">Thí sinh</span>
+                <span class="user-icon">👤</span>
+            </div>
+        </header>
+
+        <main class="quiz-main">
+            <div class="questions-panel">
+                <div class="question-container" id="questionContainer">
+                    <!-- Questions will be rendered here -->
+                </div>
+                <div class="navigation-buttons">
+                    <button class="btn-nav btn-prev" id="btnPrev">
+                        <span>‹ QUAY LẠI</span>
+                    </button>
+                    <button class="btn-nav btn-next" id="btnNext">
+                        <span>TIẾP ›</span>
+                    </button>
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Câu hỏi bậc 3/5 đến 5/5 cho nhóm nghề QLVH</h3>
+                </div>
+                <div class="question-grid" id="questionGrid">
+                    <!-- Question numbers will be rendered here -->
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-dot not-visited"></span>
+                        <span>Chưa xem</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot visited"></span>
+                        <span>Đã xem</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot current"></span>
+                        <span>Hiện tại</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot answered"></span>
+                        <span>Đã làm</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot flagged"></span>
+                        <span>Lưu lại</span>
+                    </div>
+                </div>
+                <button class="btn-finish" id="btnFinish">
+                    KẾT THÚC 30 CÂU
+                </button>
+                <div class="sidebar-footer">
+                    <p class="warning-text">Trong trường hợp lỗ mạng khi nộp bài thi, xin tải lại bài làm đổi gửi cho
+                        giám thị.</p>
+                    <a href="#" class="download-link" id="downloadExam">
+                        <span>⬇</span> Tải xuống bài thi của bạn
+                    </a>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="screen">
+        <div class="result-container">
+            <div class="result-header">
+                <div class="result-icon" id="resultIcon">🎉</div>
+                <h1 id="resultTitle">Kết Quả Bài Thi</h1>
+            </div>
+            <div class="result-card">
+                <div class="user-info-result">
+                    <p><strong>Họ và tên:</strong> <span id="resultName"></span></p>
+                    <p><strong>Ngày sinh:</strong> <span id="resultBirthDate"></span></p>
+                    <p><strong>Đơn vị:</strong> <span id="resultDepartment"></span></p>
+                    <p><strong>Ngày thi:</strong> <span id="resultDate"></span></p>
+                    <p><strong>Thời gian làm bài:</strong> <span id="resultDuration"></span></p>
+                </div>
+                <div class="score-section">
+                    <div class="score-circle" id="scoreCircle">
+                        <span class="score-number" id="scoreNumber">0</span>
+                        <span class="score-total">/30</span>
+                    </div>
+                    <div class="score-details">
+                        <div class="score-item correct">
+                            <span class="score-label">Số câu đúng:</span>
+                            <span class="score-value" id="correctCount">0</span>
+                        </div>
+                        <div class="score-item wrong">
+                            <span class="score-label">Số câu sai:</span>
+                            <span class="score-value" id="wrongCount">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-status" id="resultStatus">
+                    <!-- PASS or FAIL will be shown here -->
+                </div>
+            </div>
+            <div class="result-actions">
+                <button class="btn-primary btn-export" id="btnExportPDF">
+                    <span class="icon">📄</span>
+                    <span>Xuất PDF</span>
+                </button>
+                <button class="btn-secondary btn-retry" id="btnRetry">
+                    <span class="icon">🔄</span>
+                    <span>Làm lại</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/questions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
