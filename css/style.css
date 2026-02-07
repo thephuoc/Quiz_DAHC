@@ -1091,22 +1091,36 @@ body {
 /* Customized mobile spacing for easier reading */
 @media (max-width: 768px) {
     .questions-panel {
-        padding: 5px;
+        padding: 0;
     }
 
     .question-container {
         padding-right: 0;
     }
 
+    .question-box {
+        border-radius: 0;
+        box-shadow: none;
+        margin-bottom: 10px;
+    }
+
     .question-content {
-        padding: 12px;
+        padding: 10px;
     }
 
     .question-header {
-        padding: 10px 12px;
+        padding: 10px;
     }
 
     .option-item {
-        padding: 12px 14px;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+    }
+
+    .navigation-buttons {
+        border-radius: 0;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 }

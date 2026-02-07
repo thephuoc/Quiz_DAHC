@@ -512,6 +512,10 @@ async function exportToPDF() {
                             <td style="padding:4px 0;width:25%;">${state.user.department}</td>
                         </tr>
                         <tr>
+                            <td style="padding:4px 0;"><strong>Chữ ký thí sinh:</strong></td>
+                            <td colspan="3" style="padding:4px 0;border-bottom:1px dotted #999;min-height:30px;"></td>
+                        </tr>
+                        <tr>
                             <td style="padding:4px 0;"><strong>Ngày sinh:</strong></td>
                             <td style="padding:4px 0;">${formatDateDisplay(state.user.birthDate)}</td>
                             <td style="padding:4px 0;"><strong>Ngày thi:</strong></td>
