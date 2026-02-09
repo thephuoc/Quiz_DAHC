@@ -20,6 +20,17 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="screen active">
         <div class="login-container">
+            <!-- Admin Settings Button -->
+            <button class="btn-admin-settings" id="btnAdminSettings" title="Cài đặt quản trị">
+                ⚙️
+            </button>
+
+            <!-- History Button -->
+            <a href="history.html" class="btn-history" title="Xem lịch sử thi & PDF cache"
+                style="position:absolute;top:15px;right:60px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.3s;">
+                📂
+            </a>
+
             <div class="login-header">
                 <div class="logo-icon">📝</div>
                 <h1>Hệ Thống Thi Trắc Nghiệm</h1>
@@ -31,38 +42,98 @@
                         <span class="icon">👤</span>
                         Họ và Tên
                     </label>
-                    <input type="text" id="fullName" name="fullName" required placeholder="Nhập họ và tên đầy đủ">
+                    <select id="fullName" name="fullName" required class="candidate-select">
+                        <option value="">-- Chọn tên của bạn --</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="birthDate">
                         <span class="icon">📅</span>
                         Ngày sinh
                     </label>
-                    <input type="date" id="birthDate" name="birthDate" required>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <span class="icon">🏢</span>
-                        Đơn vị
-                    </label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="department" value="PXVH" required>
-                            <span class="radio-custom"></span>
-                            <span class="radio-label">PXVH</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="department" value="PXSC">
-                            <span class="radio-custom"></span>
-                            <span class="radio-label">PXSC</span>
-                        </label>
+                    <div class="date-input-wrapper">
+                        <input type="date" id="birthDate" name="birthDate" required>
+                        <span id="birthYearDisplay" class="year-display hidden"></span>
                     </div>
+                    <span class="input-hint">Chọn ngày và tháng sinh của bạn</span>
                 </div>
+                <div id="loginError" class="login-error" style="display: none;"></div>
                 <button type="submit" class="btn-primary btn-start">
                     <span>Bắt Đầu Thi</span>
                     <span class="icon">▶</span>
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Admin Settings Modal -->
+    <div id="adminSettingsModal" class="modal-overlay">
+        <div class="modal-content admin-settings-modal">
+            <div class="modal-header">
+                <h2>⚙️ Cài Đặt Quản Trị</h2>
+                <button class="modal-close" id="closeAdminModal">&times;</button>
+            </div>
+
+            <!-- Password Section -->
+            <div id="adminPasswordSection" class="admin-section">
+                <div class="form-group">
+                    <label for="adminPassword">
+                        <span class="icon">🔐</span>
+                        Mật khẩu quản trị
+                    </label>
+                    <input type="password" id="adminPassword" placeholder="Nhập mật khẩu">
+                    <button class="btn-primary btn-verify" id="btnVerifyPassword">Xác nhận</button>
+                </div>
+            </div>
+
+            <!-- Settings Section (hidden until password verified) -->
+            <div id="adminSettingsSection" class="admin-section" style="display: none;">
+                <h3>📊 Số câu hỏi theo phân loại</h3>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="settingPCCC">1. PCCC</label>
+                        <input type="number" id="settingPCCC" min="0" max="100" value="4">
+                        <span class="available-count" id="availablePCCC">/64</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="settingQT_ATD">2. QT_ATD</label>
+                        <input type="number" id="settingQT_ATD" min="0" max="100" value="7">
+                        <span class="available-count" id="availableQT_ATD">/105</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="settingATD">3. ATD</label>
+                        <input type="number" id="settingATD" min="0" max="100" value="7">
+                        <span class="available-count" id="availableATD">/59</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="settingTBA">4. TBA</label>
+                        <input type="number" id="settingTBA" min="0" max="100" value="6">
+                        <span class="available-count" id="availableTBA">/61</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="settingNMD">5. NMD</label>
+                        <input type="number" id="settingNMD" min="0" max="100" value="6">
+                        <span class="available-count" id="availableNMD">/78</span>
+                    </div>
+                </div>
+
+                <h3>⏱️ Cài đặt bài thi</h3>
+                <div class="settings-grid">
+                    <div class="setting-item full-width">
+                        <label for="settingTotalQuestions">Tổng số câu hỏi</label>
+                        <input type="number" id="settingTotalQuestions" min="5" max="100" value="30">
+                    </div>
+                    <div class="setting-item full-width">
+                        <label for="settingDuration">Thời gian thi (phút)</label>
+                        <input type="number" id="settingDuration" min="5" max="120" value="20">
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="btnCancelSettings">Hủy</button>
+                    <button class="modal-btn confirm" id="btnSaveSettings">💾 Lưu cài đặt</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -133,7 +204,8 @@
                     KẾT THÚC 30 CÂU
                 </button>
                 <div class="sidebar-footer">
-                    <p class="warning-text">Trong trường hợp lỗi mạng khi nộp bài thi, xin báo cáo cho PKT, hoặc nhấn nút phía dưới.</p>
+                    <p class="warning-text">Trong trường hợp lỗi mạng khi nộp bài thi, xin báo cáo cho PKT, hoặc nhấn
+                        nút phía dưới.</p>
                     <a href="#" class="download-link" id="downloadExam">
                         <span>⬇</span> Tải xuống bài thi của bạn
                     </a>
@@ -190,7 +262,9 @@
         </div>
     </div>
 
+    <script src="js/candidates.js"></script>
     <script src="js/questions.js"></script>
+    <script src="js/admin.js"></script>
     <script src="js/app.js"></script>
 </body>
 
