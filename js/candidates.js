@@ -117,92 +117,92 @@ const CANDIDATES_LIST = [
   {
     "name": "Nguyễn Đức Hùng",
     "birthDate": "23/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Xuân Đại",
     "birthDate": "24/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Trung Nghĩa",
     "birthDate": "25/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Đỗ Văn Định",
     "birthDate": "26/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Đặng Văn Trình",
     "birthDate": "27/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Lê Đình Hào",
     "birthDate": "28/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Mạnh Cường",
     "birthDate": "29/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Huỳnh Minh Hòa",
     "birthDate": "30/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Thanh Trà",
     "birthDate": "31/01/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Bá Lâm",
     "birthDate": "01/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Văn Hiển",
     "birthDate": "02/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Hoàng Ngọc Bích",
     "birthDate": "03/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Thiện Thế",
     "birthDate": "04/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Viết Lãm",
     "birthDate": "05/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Trần Ngọc Chiến",
     "birthDate": "06/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Chu Văn Hạnh",
     "birthDate": "07/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Phan Văn Nghĩa",
     "birthDate": "08/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   },
   {
     "name": "Nguyễn Xuân Thắng",
     "birthDate": "09/02/1990",
-    "department": "PXVH"
+    "department": "PXSC"
   }
 ];
 

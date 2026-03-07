@@ -129,6 +129,43 @@
                     </div>
                 </div>
 
+                <h3>📥 Nạp dữ liệu từ Excel</h3>
+                <div class="import-section" id="importSection">
+                    <div class="import-item">
+                        <div class="import-info">
+                            <span class="import-icon">👥</span>
+                            <div>
+                                <strong>Danh sách thí sinh</strong>
+                                <small>Nạp từ file Excel (cột: Họ tên, Ngày sinh, Đơn vị)</small>
+                            </div>
+                        </div>
+                        <button class="btn-import" id="btnImportCandidates" title="Chọn file Excel danh sách thí sinh">📂 Chọn file</button>
+                        <span class="import-status" id="importCandidatesStatus"></span>
+                    </div>
+                    <div class="import-item">
+                        <div class="import-info">
+                            <span class="import-icon">📝</span>
+                            <div>
+                                <strong>Ngân hàng câu hỏi</strong>
+                                <small>Chọn nhiều file Excel (PCCC, QT_ATD, ATD, TBA, NMD)</small>
+                            </div>
+                        </div>
+                        <button class="btn-import" id="btnImportQuestions" title="Chọn file Excel ngân hàng câu hỏi">📂 Chọn file</button>
+                        <span class="import-status" id="importQuestionsStatus"></span>
+                    </div>
+                    <div class="import-item">
+                        <div class="import-info">
+                            <span class="import-icon">🗑️</span>
+                            <div>
+                                <strong>Xóa lịch sử thi</strong>
+                                <small>Reset ghi nhớ câu hỏi (dùng trước khi thi thật)</small>
+                            </div>
+                        </div>
+                        <button class="btn-import btn-import-danger" id="btnResetHistory">🗑️ Xóa</button>
+                        <span class="import-status" id="resetHistoryStatus"></span>
+                    </div>
+                </div>
+
                 <div class="modal-buttons">
                     <button class="modal-btn cancel" id="btnCancelSettings">Hủy</button>
                     <button class="modal-btn confirm" id="btnSaveSettings">💾 Lưu cài đặt</button>
@@ -217,47 +254,89 @@
     <!-- Result Screen -->
     <div id="resultScreen" class="screen">
         <div class="result-container">
-            <div class="result-header">
-                <div class="result-icon" id="resultIcon">🎉</div>
-                <h1 id="resultTitle">Kết Quả Bài Thi</h1>
-            </div>
             <div class="result-card">
-                <div class="user-info-result">
-                    <p><strong>Họ và tên:</strong> <span id="resultName"></span></p>
-                    <p><strong>Ngày sinh:</strong> <span id="resultBirthDate"></span></p>
-                    <p><strong>Đơn vị:</strong> <span id="resultDepartment"></span></p>
-                    <p><strong>Ngày thi:</strong> <span id="resultDate"></span></p>
-                    <p><strong>Thời gian làm bài:</strong> <span id="resultDuration"></span></p>
+                <!-- Header Banner -->
+                <div class="result-banner" id="resultBanner">
+                    <div class="result-icon" id="resultIcon">🎉</div>
+                    <h1 id="resultTitle">Kết Quả Bài Thi</h1>
                 </div>
+
+                <!-- Score Ring -->
                 <div class="score-section">
-                    <div class="score-circle" id="scoreCircle">
-                        <span class="score-number" id="scoreNumber">0</span>
-                        <span class="score-total">/30</span>
-                    </div>
-                    <div class="score-details">
-                        <div class="score-item correct">
-                            <span class="score-label">Số câu đúng:</span>
-                            <span class="score-value" id="correctCount">0</span>
+                    <div class="score-ring-wrapper">
+                        <svg class="score-ring" viewBox="0 0 120 120">
+                            <circle class="score-ring-bg" cx="60" cy="60" r="52" />
+                            <circle class="score-ring-fill" id="scoreRingFill" cx="60" cy="60" r="52" />
+                        </svg>
+                        <div class="score-center">
+                            <span class="score-number" id="scoreNumber">0</span>
+                            <span class="score-total" id="scoreTotal">/30</span>
                         </div>
-                        <div class="score-item wrong">
-                            <span class="score-label">Số câu sai:</span>
-                            <span class="score-value" id="wrongCount">0</span>
+                    </div>
+                    <div class="score-stats">
+                        <div class="stat-card stat-correct">
+                            <span class="stat-icon">✓</span>
+                            <div class="stat-info">
+                                <span class="stat-value" id="correctCount">0</span>
+                                <span class="stat-label">Câu đúng</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-wrong">
+                            <span class="stat-icon">✗</span>
+                            <div class="stat-info">
+                                <span class="stat-value" id="wrongCount">0</span>
+                                <span class="stat-label">Câu sai</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="result-status" id="resultStatus">
-                    <!-- PASS or FAIL will be shown here -->
+
+                <!-- Status Badge -->
+                <div class="result-status" id="resultStatus"></div>
+
+                <!-- User Info -->
+                <div class="user-info-result">
+                    <div class="info-row">
+                        <span class="info-label">Họ và tên</span>
+                        <span class="info-value" id="resultName"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Ngày sinh</span>
+                        <span class="info-value" id="resultBirthDate"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Đơn vị</span>
+                        <span class="info-value" id="resultDepartment"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Ngày thi</span>
+                        <span class="info-value" id="resultDate"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Thời gian làm bài</span>
+                        <span class="info-value" id="resultDuration"></span>
+                    </div>
                 </div>
-            </div>
-            <div class="result-actions">
-                <button class="btn-primary btn-export" id="btnExportPDF">
-                    <span class="icon">📄</span>
-                    <span>Xuất PDF</span>
-                </button>
-                <button class="btn-secondary btn-retry" id="btnRetry">
-                    <span class="icon">🔄</span>
-                    <span>Làm lại</span>
-                </button>
+
+                <!-- Actions -->
+                <div class="result-actions">
+                    <button class="btn-action btn-action-primary" id="btnExportPDF">
+                        <span class="btn-action-icon">📄</span>
+                        <span>Xuất PDF</span>
+                    </button>
+                    <button class="btn-action btn-action-secondary" id="btnOpenPdfFolder" style="display:none;">
+                        <span class="btn-action-icon">📂</span>
+                        <span>Mở thư mục</span>
+                    </button>
+                    <button class="btn-action btn-action-secondary" id="btnGoHome" style="display:none;">
+                        <span class="btn-action-icon">🏠</span>
+                        <span>Về Home</span>
+                    </button>
+                    <button class="btn-action btn-action-secondary" id="btnRetry">
+                        <span class="btn-action-icon">🔄</span>
+                        <span>Làm lại</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

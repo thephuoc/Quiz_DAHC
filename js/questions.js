@@ -12,7 +12,7 @@
 
 const QUESTION_BANK = [
   {
-    "question": "Theo Luật PCCC & CNCH 2024, nhà máy thủy điện thuộc loại hình cơ sở nào sau đây",
+    "question": "Theo Luật PCCC & CNCH 2024, nhà máy thủy điện thuộc loại hình cơ sở nào sau đây:",
     "options": [
       "Không thuộc diện quản lý PCCC",
       "Cơ sở nguy hiểm cháy, nổ",
@@ -39,7 +39,7 @@ const QUESTION_BANK = [
     "question": "Lực lượng PCCC cơ sở tại nhà máy thủy điện do ai thành lập?",
     "options": [
       "Cơ quan Công an",
-      "UBND cấp xã , phường",
+      "UBND cấp xã, phường",
       "Người đứng đầu cơ sở",
       "Ban quản lý dự án"
     ],
@@ -108,7 +108,7 @@ const QUESTION_BANK = [
     "id": 8
   },
   {
-    "question": "Nhà máy thủy điện phải tổ chức diễn tập phương án PCCC & CNCH với tần suất tối thiểu",
+    "question": "Nhà máy thủy điện phải tổ chức diễn tập phương án PCCC & CNCH với tần suất tối thiểu:",
     "options": [
       "6 tháng/lần",
       "1 năm/lần",
@@ -204,7 +204,7 @@ const QUESTION_BANK = [
     "id": 16
   },
   {
-    "question": "dầu, mỡ bôi trơn phải bố trí:",
+    "question": "Dầu, mỡ bôi trơn phải bố trí:",
     "options": [
       "Gần phòng điều khiển",
       "Chung với kho vật tư",
@@ -216,7 +216,7 @@ const QUESTION_BANK = [
     "id": 17
   },
   {
-    "question": "Yếu tố nào làm cháy lan nhanh trong nhà máy",
+    "question": "Yếu tố nào làm cháy lan nhanh trong nhà máy:",
     "options": [
       "Trần cao",
       "Gió đối lưu mạnh",
@@ -228,7 +228,7 @@ const QUESTION_BANK = [
     "id": 18
   },
   {
-    "question": "Việc hút thuốc trong khu vực nhà máy",
+    "question": "Việc hút thuốc trong khu vực nhà máy:",
     "options": [
       "Được phép mọi nơi",
       "Được phép trong gian máy",
@@ -372,7 +372,7 @@ const QUESTION_BANK = [
     "id": 30
   },
   {
-    "question": "Khi xảy ra cháy, người phát hiện đầu tiên phải",
+    "question": "Khi xảy ra cháy, người phát hiện đầu tiên phải:",
     "options": [
       "Tự ý xử lý",
       "Bỏ chạy",
@@ -612,7 +612,7 @@ const QUESTION_BANK = [
     "id": 50
   },
   {
-    "question": "Trong ca trực đêm, phát hiện khói trắng và mùi khét tại khu vực máy biến áp chính, chưa có lửa. Hành động đúng nhất là",
+    "question": "Trong ca trực đêm, phát hiện khói trắng và mùi khét tại khu vực máy biến áp chính, chưa có lửa. Hành động đúng nhất là:",
     "options": [
       "Dùng nước xịt trực tiếp vào khu vực nghi có cháy",
       "Báo động, báo trưởng ca, cô lập điện theo quy trình",
@@ -624,7 +624,7 @@ const QUESTION_BANK = [
     "id": 51
   },
   {
-    "question": "Dầu cách điện từ máy biến áp bị rò rỉ và bốc cháy cục bộ tại mương thu dầu.Biện pháp xử lý ban đầu phù hợp nhất",
+    "question": "Dầu cách điện từ máy biến áp bị rò rỉ và bốc cháy cục bộ tại mương thu dầu. Biện pháp xử lý ban đầu phù hợp nhất:",
     "options": [
       "Dùng nước phun mạnh",
       "Dùng cát hoặc bọt chữa cháy",
@@ -636,7 +636,7 @@ const QUESTION_BANK = [
     "id": 52
   },
   {
-    "question": "Xảy ra cháy tại tủ điện điều khiển đang mang điện. Chất chữa cháy phù hợp nhất là",
+    "question": "Xảy ra cháy tại tủ điện điều khiển đang mang điện. Chất chữa cháy phù hợp nhất là:",
     "options": [
       "Nước",
       "Bọt",
@@ -648,7 +648,7 @@ const QUESTION_BANK = [
     "id": 53
   },
   {
-    "question": "Một công nhân rơi xuống kênh dẫn nước trong quá trình kiểm tra.nguyên tắc ưu tiên khi CHCN là",
+    "question": "Một công nhân rơi xuống kênh dẫn nước trong quá trình kiểm tra. Nguyên tắc ưu tiên khi CHCN là:",
     "options": [
       "Nhảy xuống cứu ngay",
       "Gọi nhiều người hỗ trợ",
@@ -660,7 +660,7 @@ const QUESTION_BANK = [
     "id": 54
   },
   {
-    "question": "Cháy xảy ra tại gian máy, khói dày, tầm nhìn kém. Biện pháp an toàn khi thoát nạn là",
+    "question": "Cháy xảy ra tại gian máy, khói dày, tầm nhìn kém. Biện pháp an toàn khi thoát nạn là:",
     "options": [
       "Chạy nhanh theo cảm tính",
       "Cúi thấp, di chuyển theo lối thoát nạn",
@@ -672,7 +672,7 @@ const QUESTION_BANK = [
     "id": 55
   },
   {
-    "question": "Hệ thống báo cháy tự động phát tín hiệu nhưng chưa thấy lửa, cách xử lý đúng là",
+    "question": "Hệ thống báo cháy tự động phát tín hiệu nhưng chưa thấy lửa, cách xử lý đúng là:",
     "options": [
       "Tắt chuông báo",
       "Xác minh ngay khu vực báo cháy",
@@ -696,7 +696,7 @@ const QUESTION_BANK = [
     "id": 57
   },
   {
-    "question": "Trong quá trình chữa cháy, phát hiện có người mắc kẹt trong gian máy, ưu tiên xử lý là",
+    "question": "Trong quá trình chữa cháy, phát hiện có người mắc kẹt trong gian máy, ưu tiên xử lý là:",
     "options": [
       "Dập tắt hoàn toàn đám cháy",
       "Cứu người kết hợp đảm bảo an toàn",
@@ -708,7 +708,7 @@ const QUESTION_BANK = [
     "id": 58
   },
   {
-    "question": "Cháy vượt quá khả năng xử lý của lực lượng PCCC&CNCH cơ sở. Hành động đúng là",
+    "question": "Cháy vượt quá khả năng xử lý của lực lượng PCCC&CNCH cơ sở. Hành động đúng là:",
     "options": [
       "Tiếp tục tự chữa cháy",
       "Báo ngay Cảnh sát PCCC (114)",
@@ -732,7 +732,7 @@ const QUESTION_BANK = [
     "id": 60
   },
   {
-    "question": "Phát hiện công nhân hút thuốc trong khu vực cấm lửa. Cách xử lý",
+    "question": "Phát hiện công nhân hút thuốc trong khu vực cấm lửa. Cách xử lý:",
     "options": [
       "Nhắc miệng cho qua",
       "Không xử lý",
@@ -744,7 +744,7 @@ const QUESTION_BANK = [
     "id": 61
   },
   {
-    "question": "Trong lúc CNCH dưới nước, người cứu không có áo phao.hành động đúng là",
+    "question": "Trong lúc CNCH dưới nước, người cứu không có áo phao. Hành động đúng là:",
     "options": [
       "Vẫn xuống cứu ngay",
       "Chờ thêm người",
@@ -768,7 +768,7 @@ const QUESTION_BANK = [
     "id": 63
   },
   {
-    "question": "Lối thoát nạn bị che chắn bởi vật tư.theo quy định về PCCC&CNCH Phải",
+    "question": "Lối thoát nạn bị che chắn bởi vật tư. Theo quy định về PCCC&CNCH phải:",
     "options": [
       "Giữ tạm",
       "Chuyển vật tư sau",
@@ -828,7 +828,7 @@ const QUESTION_BANK = [
     "id": 68
   },
   {
-    "question": "Quản đốc, phó quản đốc phân xưởng (hoặc cấp tương đương), đội trưởng, đội phó đội sản xuất, kỹ thuật viên, kỹ sư trực tiếp sản xuất, công nhân (nhân viên) phải được huấn luyện,kiểm tra quy trình An toàn điện:",
+    "question": "Quản đốc, phó quản đốc phân xưởng (hoặc cấp tương đương), đội trưởng, đội phó đội sản xuất, kỹ thuật viên, kỹ sư trực tiếp sản xuất, công nhân (nhân viên) phải được huấn luyện, kiểm tra quy trình An toàn điện:",
     "options": [
       "Mỗi năm 01 lần",
       "Mỗi năm 02 lần.",
@@ -857,7 +857,7 @@ const QUESTION_BANK = [
       "Khảo sát, lập biên bản hiện trường (nếu cần thiết).",
       "Đăng ký công tác.",
       "Làm việc theo Phiếu công tác hoặc Lệnh công tác.",
-      "Khảo sát, lập biên bản hiện trường (nếu cần thiết).Đăng ký công tác.Làm việc theo Phiếu công tác hoặc Lệnh công tác."
+      "Khảo sát, lập biên bản hiện trường (nếu cần thiết).Đăng ký công tác. Làm việc theo Phiếu công tác hoặc Lệnh công tác."
     ],
     "correct": 3,
     "category": "QT_ATD",
@@ -893,7 +893,7 @@ const QUESTION_BANK = [
       "Phải có bậc 4 an toàn điện trở lên;",
       "Được công nhận chức danh “Người chỉ huy trực tiếp”, hàng năm phải được huấn luyện về những nội dung có liên quan, kiểm tra đạt yêu cầu và được Giám đốc, Phó Giám đốc kỹ thuật cấp Công ty ra quyết định công nhận;",
       "Phải nắm vững thời gian, địa điểm, nội dung công việc được giao và các biện pháp an toàn phù hợp với yêu cầu của công việc;",
-      "Phải có bậc 4 an toàn điện trở lên,Phải nắm vững thời gian, địa điểm, nội dung công việc được giao và các biện pháp an toàn phù hợp với yêu cầu của công việc;\nĐược công nhận chức danh “Người chỉ huy trực tiếp”,"
+      "Phải có bậc 4 an toàn điện trở lên, Phải nắm vững thời gian, địa điểm, nội dung công việc được giao và các biện pháp an toàn phù hợp với yêu cầu của công việc;\nĐược công nhận chức danh “Người chỉ huy trực tiếp”,"
     ],
     "correct": 3,
     "category": "QT_ATD",
@@ -915,7 +915,7 @@ const QUESTION_BANK = [
     "question": "Trách nhiệm của người chỉ huy trực tiếp:",
     "options": [
       "Chỉ huy mọi người đến đúng địa điểm (nơi) sẽ làm việc theo kế hoạch, chỉ dẫn cụ thể nhiệm vụ, nội dung công việc cho các nhân viên trong đơn vị công tác.",
-      "Chỉ dẫn cho các nhân viên trong đơn vị công tác đến đúngđịa điểm (nơi) sẽ làm việc theo kế hoạch, yêu cầu mọi người tự tìm hiểu nhiệm vụ, nội dung công việc.",
+      "Chỉ dẫn cho các nhân viên trong đơn vị công tác đến đúng địa điểm (nơi) sẽ làm việc theo kế hoạch, yêu cầu mọi người tự tìm hiểu nhiệm vụ, nội dung công việc.",
       "Chỉ dẫn cho các nhân viên trong đơn vị công tác đến đúng địa điểm (nơi) sẽ làm việc theo kế hoạch,",
       "Chỉ huy mọi người đến đúng địa điểm (nơi) sẽ làm việc theo kế hoạch."
     ],
@@ -926,10 +926,10 @@ const QUESTION_BANK = [
   {
     "question": "Trách nhiệm của người chỉ huy trực tiếp:",
     "options": [
-      "Tại hiện trường cử 1 nhân viên đơn vị công tác có kinh nghiệm kiểm tra, tiếp nhận các biện pháp an toàn, các yếu tố nguy hiểm, nơi làm việcdo người cho phép giao và chỉ dẫn khi thực hiện việc cho phép làm việc.",
+      "Tại hiện trường cử 1 nhân viên đơn vị công tác có kinh nghiệm kiểm tra, tiếp nhận các biện pháp an toàn, các yếu tố nguy hiểm, nơi làm việc do người cho phép giao và chỉ dẫn khi thực hiện việc cho phép làm việc.",
       "Tại hiện trường phải kiểm tra, tiếp nhận các biện pháp an toàn nơi làm việc do người cho phép giao và thực hiện các biện pháp an toàn cần thiết khác.",
-      "Tại hiện trường cử 2 nhân viên đơn vị công tác có kinh nghiệm kiểm tra, tiếp nhận các biện pháp an toàn, các yếu tố nguy hiểm, nơi làm việcdo người cho phép giao và chỉ dẫn khi thực hiện việc cho phép làm việc.",
-      "Tại hiện trường cử 1 nhân viên đơn vị công tác có kinh nghiệm kiểm tra, tiếp nhận các biện pháp an toàn, các yếu tố nguy hiểm, nơi làm việcdo người cho phép giao"
+      "Tại hiện trường cử 2 nhân viên đơn vị công tác có kinh nghiệm kiểm tra, tiếp nhận các biện pháp an toàn, các yếu tố nguy hiểm, nơi làm việc do người cho phép giao và chỉ dẫn khi thực hiện việc cho phép làm việc.",
+      "Tại hiện trường cử 1 nhân viên đơn vị công tác có kinh nghiệm kiểm tra, tiếp nhận các biện pháp an toàn, các yếu tố nguy hiểm, nơi làm việc do người cho phép giao"
     ],
     "correct": 1,
     "category": "QT_ATD",
@@ -941,7 +941,7 @@ const QUESTION_BANK = [
       "Phải tiếp đất ngay sau khi thử hết điện.",
       "Tiếp đất ở tất cả các pha của thiết bị về phía có khả năng dẫn điện đến.",
       "Đảm bảo khoảng cách an toàn đối với phần còn mang điện và đảm bảo cho toàn bộ đơn vị công tác nằm trọn trong vùng bảo vệ của nối đất.",
-      "Phải tiếp đất ngay sau khi thử hết điện. Tiếp đất ở tất cả các pha của thiết bị về phía có khả năng dẫn điện đến,Đảm bảo khoảng cách an toàn đối với phần còn mang điện và đảm bảo cho toàn bộ đơn vị công tác nằm trọn trong vùng bảo vệ của nối đất."
+      "Phải tiếp đất ngay sau khi thử hết điện. Tiếp đất ở tất cả các pha của thiết bị về phía có khả năng dẫn điện đến, Đảm bảo khoảng cách an toàn đối với phần còn mang điện và đảm bảo cho toàn bộ đơn vị công tác nằm trọn trong vùng bảo vệ của nối đất."
     ],
     "correct": 3,
     "category": "QT_ATD",
@@ -950,7 +950,7 @@ const QUESTION_BANK = [
   {
     "question": "Khi tạm ngừng công việc trong ngày để nghỉ giải lao (ăn trưa), đối với công việc cắt điện từng phần hoặc không cắt điện:",
     "options": [
-      "Phải rút toàn bộ đơn vị công tác ra khỏi nơi làm việc, các biện pháp an toàn vẫn giữ nguyên, chỉ được vào làm việc trở lại khi được sự đồng ý của người chỉ huy trực tiếp hoặc người giám sát sau khi kiểm tra còn đấy đủ các biện pháp an toàn.",
+      "Phải rút toàn bộ đơn vị công tác ra khỏi nơi làm việc, các biện pháp an toàn vẫn giữ nguyên, chỉ được vào làm việc trở lại khi được sự đồng ý của người chỉ huy trực tiếp hoặc người giám sát sau khi kiểm tra còn đầy đủ các biện pháp an toàn.",
       "Phải rút toàn bộ đơn vị công tác ra khỏi nơi làm việc, thao gỡ các biện pháp an toàn.",
       "Đơn vị công tác nghỉ ăn trưa tại chỗ, các biện pháp an toàn phải giữ nguyên.",
       "Phải trả lai vị trí công tác cho người cho phép."
@@ -1085,7 +1085,7 @@ const QUESTION_BANK = [
       "Sau khi hoàn thành công việc, phiếu công tác được giao trả lại người cấp phiếu để kiểm tra, lưu giữ ít nhất 1 tháng.",
       "Thực hiện theo đáp án 1 cho cả những phiếu công tác đã cấp nhưng không thực hiện.",
       "Trường hợp khi tiến hành công việc, nếu để xảy ra sự cố hoặc tai nạn thì phiếu công tác phải được lưu trong hồ sơ điều tra sự cố, tai nạn lao động của đơn vị.",
-      "Sau khi hoàn thành công việc, phiếu công tác được giao trả lại người cấp phiếu để kiểm tra, lưu giữ ít nhất 1 tháng.Trường hợp khi tiến hành công việc, nếu để xảy ra sự cố hoặc tai nạn thì phiếu công tác phải được lưu trong hồ sơ điều tra sự cố, tai nạn lao động của đơn vị."
+      "Sau khi hoàn thành công việc, phiếu công tác được giao trả lại người cấp phiếu để kiểm tra, lưu giữ ít nhất 1 tháng. Trường hợp khi tiến hành công việc, nếu để xảy ra sự cố hoặc tai nạn thì phiếu công tác phải được lưu trong hồ sơ điều tra sự cố, tai nạn lao động của đơn vị."
     ],
     "correct": 3,
     "category": "QT_ATD",
@@ -1192,8 +1192,8 @@ const QUESTION_BANK = [
     "options": [
       "Hỏng bình ắc quy.",
       "Mất điện.",
-      "Nổ bình ắcquy.",
-      "Hỏng bình ắc quy, Mất điện. Nổ bình ắcquy."
+      "Nổ bình ắc quy.",
+      "Hỏng bình ắc quy, Mất điện. Nổ bình ắc quy."
     ],
     "correct": 3,
     "category": "QT_ATD",
@@ -1455,7 +1455,7 @@ const QUESTION_BANK = [
     "question": "Đơn vị quản lý vận hành phải làm gì sau khi có giấy đăng ký của đơn vị làm công việc:",
     "options": [
       "Lập kế hoạch để kết hợp công tác và đăng ký cắt điện với các cấp điều độ theo quy định (trường hợp có cắt điện).",
-      "Thông báocắt điện cho đơn vị làm công việc để triển khai công việc khi đăng ký cắt điện đã được phê duyệt.",
+      "Thông báo cắt điện cho đơn vị làm công việc để triển khai công việc khi đăng ký cắt điện đã được phê duyệt.",
       "Lập kế hoạch đăng ký cắt điện với các cấp điều độ theo quy định (trường hợp có cắt điện).",
       "Lập kế hoạch để kết hợp công tác và đăng ký cắt điện"
     ],
@@ -1514,9 +1514,9 @@ const QUESTION_BANK = [
   {
     "question": "Tất cả các thiết bị lắp đặt trên hệ thống điện đều phải:",
     "options": [
-      "Đặt tên, treo biển báo hướng dẫn theo đúng qui định.",
+      "Đặt tên, treo biển báo hướng dẫn theo đúng quy định.",
       "Phải đánh số ký hiệu thống nhất trong Ngành.",
-      "Đặt tên thống nhất theo qui định của đơn vị quản lý hoặc theo địa dư.",
+      "Đặt tên thống nhất theo quy định của đơn vị quản lý hoặc theo địa dư.",
       "Gồm cả hai nội dung A và B mới đúng."
     ],
     "correct": 3,
@@ -1668,7 +1668,7 @@ const QUESTION_BANK = [
     "id": 138
   },
   {
-    "question": "Trong điều kiện vận hành bình thường người giám sát thao tác và người thao tác phải thực hiện những qui định nào?",
+    "question": "Trong điều kiện vận hành bình thường người giám sát thao tác và người thao tác phải thực hiện những quy định nào?",
     "options": [
       "Người giám sát thao tác và người thao tác, sau khi xem xét không còn thắc mắc cùng ký vào phiếu, mang phiếu đến địa điểm thao tác.",
       "Tới nơi (vị trí) thao tác phải kiểm tra lại một lần nữa theo sơ đồ (nếu có) và đối chiếu vị trí thiết bị trên thực tế đúng với nội dung ghi trong phiếu, đồng thời kiểm tra xung quanh hay trên thiết bị còn gì trở ngại không, sau đó mới được phép thao tác.",
@@ -1680,7 +1680,7 @@ const QUESTION_BANK = [
     "id": 139
   },
   {
-    "question": "Trong điều kiện vận hành bình thường người giám sát thao tác và người thao tác phải thực hiện những qui định nào?",
+    "question": "Trong điều kiện vận hành bình thường người giám sát thao tác và người thao tác phải thực hiện những quy định nào?",
     "options": [
       "Khi nhận phiếu thao tác phải đọc kỹ và kiểm tra lại nội dung thao tác theo sơ đồ, nếu chưa rõ thì phải hỏi lại người ra lệnh.n",
       "Nếu nhận lệnh bằng điện thoại thì người giám sát thao tác phải ghi đầy đủ lệnh đó và nhắc lại từng động tác trong điện thoại, ghi âm lại (nếu có), ghi tên người ra lệnh, nhận lệnh, ngày, giờ truyền lệnh vào phiếu thao tác, sổ nhật ký vận hành.",
@@ -1709,7 +1709,7 @@ const QUESTION_BANK = [
       "Cắt điện ngay.",
       "Báo cho người phụ trách để xử lý.",
       "Cắt điện ngay sau đó phải báo cho nhân viên vận hành cấp trên và người phụ trách trực tiếp của mình biết nội dung những việc đã làm, sau đó ghi đầy đủ vào nhật ký vận hành.",
-      "Chỉ được cắt điện khi có lệnh hoặc Phiếu theo qui trình."
+      "Chỉ được cắt điện khi có lệnh hoặc Phiếu theo quy trình."
     ],
     "correct": 2,
     "category": "QT_ATD",
@@ -1932,7 +1932,7 @@ const QUESTION_BANK = [
     "id": 160
   },
   {
-    "question": "Theo Qui trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 qui định: Ai là người giao phiếu công tác cho người chỉ huy trực tiếp? Và giao khi nào?",
+    "question": "Theo quy trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 quy định: Ai là người giao phiếu công tác cho người chỉ huy trực tiếp? Và giao khi nào?",
     "options": [
       "Người cấp phiếu giao cho người chỉ huy trực tiếp sau khi kiểm tra các biện pháp an toàn đã ghi đầy đủ trong phiếu công tác và ký phiếu.",
       "Nhân viên vận hành tại nơi công tác (hiện trường) giao phiếu công tác cho người chỉ huy trực tiếp sau khi kiểm tra các nội dung công việc và các biện pháp an toàn đã ghi đầy đủ trong phiếu công tác và ghi đầy đủ nội dung vào sổ nhật ký vận hành.",
@@ -1944,7 +1944,7 @@ const QUESTION_BANK = [
     "id": 161
   },
   {
-    "question": "Theo Qui trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 qui định: Trách nhiệm nào sau đây là của người cấp phiếu công tác?",
+    "question": "Theo quy trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 quy định: Trách nhiệm nào sau đây là của người cấp phiếu công tác?",
     "options": [
       "Khi giao phiếu cho Người chỉ huy trực tiếp phải chỉ dẫn những yêu cầu cụ thể và những yếu tố nguy hiểm về an toàn điện tại nơi làm việc để Người chỉ huy trực tiếp hướng dẫn cho đơn vị công tác thực hiện để đảm bảo an toàn.",
       "Khi giao phiếu cho Người cho phép phải chỉ dẫn những yêu cầu cụ thể và những yếu tố nguy hiểm về an toàn điện tại nơi làm việc để Người cho phép hướng dẫn cho đơn vị công tác khi thực hiện việc cho phép làm việc để đảm bảo an toàn",
@@ -1956,7 +1956,7 @@ const QUESTION_BANK = [
     "id": 162
   },
   {
-    "question": "Theo Qui trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 qui định: Trách nhiệm nào sau đây là của người cho phép?",
+    "question": "Theo quy trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 quy định: Trách nhiệm nào sau đây là của người cho phép?",
     "options": [
       "Nhận Phiếu công tác từ Người cấp phiếu, tiếp nhận sự điều hành, chỉ dẫn của trưởng ca (trực chính) ca trực vận hành của đơn vị để biết đầy đủ tình trạng vận hành của thiết bị nơi thực hiện công việc (nếu người cấp phiếu không phải là trưởng ca, trực chính ca trực vận hành), kiểm tra biện pháp an toàn và thực hiện việc cho phép làm việc tại hiện trường để cho đơn vị công tác vào làm việc.",
       "Nắm vững các quy định và những yêu cầu về an toàn điện tại nơi làm việc để giám sát đơn vị công tác đảm bảo an toàn về điện.",
@@ -1968,7 +1968,7 @@ const QUESTION_BANK = [
     "id": 163
   },
   {
-    "question": "Theo Qui trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 qui định: Trách nhiệm nào sau đây là của người chỉ huy trực tiếp?",
+    "question": "Theo quy trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 quy định: Trách nhiệm nào sau đây là của người chỉ huy trực tiếp?",
     "options": [
       "Chịu trách nhiệm phối hợp hoạt động của các đơn vị công tác, khi công việc do nhiều đơn vị công tác của cùng một tổ chức hoạt động điện lực thực hiện theo các phiếu công tác để đảm bảo an toàn.",
       "Trách nhiệm kiểm tra: tiếp nhận các biện pháp an toàn do người cho phép bàn giao và thực hiện các biện pháp an toàn cần thiết khác",
@@ -1997,14 +1997,14 @@ const QUESTION_BANK = [
       "Nghỉ tại chổ, nhưng phải tập trung không được đi lung tung.",
       "Tất cả mọi người trong đơn vị công tác phải rút ra khỏi khu vực làm việc, ngoại trừ người giám sát an toàn.",
       "Tất cả mọi người trong đơn vị công tác phải rút ra khỏi khu vực làm việc, ngoại trừ người chỉ huy trực tiếp.",
-      "Tất cả mọi người trong đơn vị công tác phảidừng làm việc và các biện pháp an toàn phải được giữ nguyên."
+      "Tất cả mọi người trong đơn vị công tác phải dừng làm việc và các biện pháp an toàn phải được giữ nguyên."
     ],
     "correct": 3,
     "category": "QT_ATD",
     "id": 166
   },
   {
-    "question": "Theo Qui trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 qui định: Nhân viên đơn vị công tác có quyền nào sau đây?",
+    "question": "Theo quy trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 quy định: Nhân viên đơn vị công tác có quyền nào sau đây?",
     "options": [
       "Phản ánh với cấp trên nếu thấy người giám sát an toàn không có mặt tại nơi công tác.",
       "Từ chối thực hiện công việc khi thấy không đảm bảo an toàn, nếu người chỉ huy trực tiếp không chấp thuận thì báo cáo lên cấp trên để giải quyết.",
@@ -2016,7 +2016,7 @@ const QUESTION_BANK = [
     "id": 167
   },
   {
-    "question": "Theo Qui trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 qui định: Sau khi hoàn thành công việc, Phiếu công tác được giao trả cho ai?",
+    "question": "Theo quy trình An toàn điện kèm theo Quyết định số 959/QĐ-EVN ngày 09/08/2018 quy định: Sau khi hoàn thành công việc, Phiếu công tác được giao trả cho ai?",
     "options": [
       "Người lãnh đạo công việc.",
       "Người cho phép làm việc.",
@@ -2199,8 +2199,8 @@ const QUESTION_BANK = [
     "question": "Khi nào thì nhân viên vận hành được phép cắt các máy cắt, dao cách ly mà không phải có lệnh thao tác hoặc phiếu thao tác?",
     "options": [
       "Khi xảy ra tai nạn, sự cố hoặc có thể gây ra mất an toàn cho người và hư hỏng thiết bị.",
-      "Khi đưa thiết bị từ sửa chữa vào vận hành và các Phiếu công tác liên quan đên thiết bị đã được khóa hết.",
-      "Khi các Phiếu công tác liên quan đên thiết bị đã được khóa, nơi làm việc đã được đơn vi công tác bàn giao cho người cho phép làm việc.",
+      "Khi đưa thiết bị từ sửa chữa vào vận hành và các Phiếu công tác liên quan đến thiết bị đã được khóa hết.",
+      "Khi các Phiếu công tác liên quan đến thiết bị đã được khóa, nơi làm việc đã được đơn vị công tác bàn giao cho người cho phép làm việc.",
       "Khi nhân viên đơn vị công tác yêu cầu đóng điện để chạy thử và hiệu chỉnh thiết bị."
     ],
     "correct": 0,
@@ -2487,9 +2487,9 @@ const QUESTION_BANK = [
     "question": "Trong Phiếu công tác bao gồm những chức danh nào sau đây?",
     "options": [
       "(1) Người cấp Phiếu công tác; (2) Người Lãnh đạo công việc; (3) Người chỉ huy trực tiếp; (4) Người cho phép làm việc; (5) Người giám sát an toàn điện; (6) Nhân viên đơn vị công tác.",
-      "(1) Người cấp Phiếu công tác; (2) Người ra lện công tác; (3) Người chỉ huy trực tiếp; (4) Người cho phép làm việc; (5) Người giám sát an toàn điện; (6) Nhân viên đơn vị công tác.",
-      "(1) Người cấp Phiếu công tác; (2) Người Lãnh đạo việc; (3) Người chỉ huy trực tiếp; (4) Người cho phép làm việc; (5) Người giám sát an toàn điện; (6) Người nhận lệnh công tác.",
-      "(1) Người cấp Phiếu công tác; (2) Người Lãnh đạo việc; (3) Người ra lệnh công tác; (4) Người cho phép làm việc; (5) Người nhận lệnh công tác; (6) Nhân viên đơn vị công tác."
+      "(1) Người cấp Phiếu công tác; (2) Người ra lệnh công tác; (3) Người chỉ huy trực tiếp; (4) Người cho phép làm việc; (5) Người giám sát an toàn điện; (6) Nhân viên đơn vị công tác.",
+      "(1) Người cấp Phiếu công tác; (2) Người Lãnh đạo công việc; (3) Người chỉ huy trực tiếp; (4) Người cho phép làm việc; (5) Người giám sát an toàn điện; (6) Người nhận lệnh công tác.",
+      "(1) Người cấp Phiếu công tác; (2) Người Lãnh đạo công việc; (3) Người ra lệnh công tác; (4) Người cho phép làm việc; (5) Người nhận lệnh công tác; (6) Nhân viên đơn vị công tác."
     ],
     "correct": 0,
     "category": "ATD",
@@ -2736,7 +2736,7 @@ const QUESTION_BANK = [
     "id": 227
   },
   {
-    "question": "Anh/ chỉ hãy chỉ ra đâu là trách nhiệm của Người ra LCT trong đáp án sau?",
+    "question": "Anh/ chị hãy chỉ ra đâu là trách nhiệm của Người ra LCT trong đáp án sau?",
     "options": [
       "Có mặt liên tục tại nơi làm việc, giám sát và có biện pháp để nhân viên đơn vị công tác không thực hiện những hành vi có thể gây tai nạn trong quá trình làm việc.",
       "Kiểm tra (hoặc thực hiện nếu được người cấp phiếu giao) việc thực hiện đủ, đúng các biện pháp an toàn tại hiện trường thuộc trách nhiệm của mình để chuẩn bị chỗ làm việc cho đơn vị công tác.",
@@ -2751,7 +2751,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn điện quy định nối đất khi làm việc trong ngăn tủ phân phối như  thế nào?",
     "options": [
       "Phải nối đất ở thanh cái và xuất tuyến của ngăn này. Không cho phép làm việc trong ngăn tủ phân phối khi hàm tĩnh trên hoặc dưới ngăn tủ này chưa được nối đất.",
-      "Phải đặt 02 bộ tiếp đât ở 02 vị trí liền kề gần nhất vị trí làm việc.",
+      "Phải đặt 02 bộ tiếp đất ở 02 vị trí liền kề gần nhất vị trí làm việc.",
       "Cho phép đặt nối đất ở đầu có nguồn cung cấp đến, đầu còn lại phải mở thiết bị đóng cắt.",
       "Cho phép làm việc trong ngăn tủ phân phối khi hàm tĩnh trên hoặc dưới ngăn tủ này đã được cắt điện."
     ],
@@ -2763,7 +2763,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn điện, quy định về kiểm tra không còn điện đối với thiết bị điện tại nhà máy điện, trạm điện, GIS, tủ hợp bộ hoặc thiết bị kiểu kín như thế nào?",
     "options": [
       "Cho phép kiểm tra không còn điện thông qua chỉ thị tại chỗ thiết bị đóng cắt (3 pha, tất cả các phía) và thông số điện áp (nếu có)",
-      "Không cho phép căn cứ vào tín hiệu , đèn, đồng hồ, rơ le...",
+      "Không cho phép căn cứ vào tín hiệu, đèn, đồng hồ, rơ le...",
       "Dùng sào gõ nhẹ vào đường dây, thanh cái...",
       "Cả 03 đáp án đều sai"
     ],
@@ -2776,7 +2776,7 @@ const QUESTION_BANK = [
     "options": [
       "Phải có kế hoạch và phương án kỹ thuật thi công",
       "Mọi thao tác đóng cắt máy cắt phải điều khiển từ xa. Cấm ấn nút thao tác ở ngay hộp điều khiển tại máy cắt khi đang có điện (trừ sự cố hoặc tai nạn).",
-      "Phải có PCT; phải cắt các cầu dao cách ly trước và sau máy ngắt.Treo biển: “Cấm đóng điện! Có người đang làm việc ” vào khoá điều khiển máy ngắt.",
+      "Phải có PCT; phải cắt các cầu dao cách ly trước và sau máy ngắt. Treo biển: “Cấm đóng điện! Có người đang làm việc ” vào khoá điều khiển máy ngắt.",
       "Phải có PTT và tiếp đất di động hai phía MC."
     ],
     "correct": 1,
@@ -2884,7 +2884,7 @@ const QUESTION_BANK = [
     "options": [
       "Cấm đóng, cắt điện bằng khóa điều khiển máy cắt điện.",
       "Không cho phép thao tác tại chỗ thiết bị đóng cắt ngoài trời trong điều kiện thời tiết xấu (mưa tạo thành dòng chảy trên thiết bị điện, giông sét, ngập lụt, gió từ cấp 06 trở lên).",
-      "Cấm đóng, cắt điện bằng bằng bất kỳ cách thức nào",
+      "Cấm đóng, cắt điện bằng bất kỳ cách thức nào",
       "Cấm đóng, cắt điện bằng nguồn điều khiển thao tác từ xa."
     ],
     "correct": 1,
@@ -3036,7 +3036,7 @@ const QUESTION_BANK = [
     "id": 252
   },
   {
-    "question": "Theo Quy trình An toàn điện, thiết bị GIS (Gas Insulated System) là hiết bị gì?",
+    "question": "Theo Quy trình An toàn điện, tthiết bị GIS (Gas Insulated System) là hiết bị gì?",
     "options": [
       "Là thiết bị điện cách điện bằng khí SF6 áp lực cao, đặt trong buồng kim loại được nối đất.",
       "Là TBA thu gọn đặt trong buồng kim loại được cách điện với đất, cách điện cho các thiết bị chính của trạm bằng chất khí trơ.",
@@ -3052,7 +3052,7 @@ const QUESTION_BANK = [
     "options": [
       "Thông tư Quy định quy trình thao tác trong hệ thống điện quốc gia của Bộ Công Thương.",
       "Thông tư Quy định quy trình xử lý sự cố trong hệ thống điện quốc gia của Bộ Công Thương.",
-      "Thông tư Quy định quy trình điều đô trong hệ thống điện quốc gia của Bộ Công Thương.",
+      "Thông tư Quy định quy trình điều độ trong hệ thống điện quốc gia của Bộ Công Thương.",
       "Quy trình thao tác trong hệ thống điện khu vực lưới điện phân phối."
     ],
     "correct": 0,
@@ -3064,7 +3064,7 @@ const QUESTION_BANK = [
     "options": [
       "Thông tư Quy định quy trình thao tác trong hệ thống điện quốc gia của Bộ Công Thương.",
       "Thông tư Quy định quy trình xử lý sự cố trong hệ thống điện quốc gia của Bộ Công Thương.",
-      "Thông tư Quy định quy trình điều đô trong hệ thống điện quốc gia của Bộ Công Thương.",
+      "Thông tư Quy định quy trình điều độ trong hệ thống điện quốc gia của Bộ Công Thương.",
       "Quy trình xử lý sự cố trong hệ thống điện khu vực lưới điện phân phối."
     ],
     "correct": 1,
@@ -3072,7 +3072,7 @@ const QUESTION_BANK = [
     "id": 255
   },
   {
-    "question": "Theo Quy trình An toàn điện, quy định về thao tác thết bị GIS trong trường hợp vận hành bình thường như thế nào?",
+    "question": "Theo Quy trình An toàn điện, quy định về thao tác thiết bị GIS trong trường hợp vận hành bình thường như thế nào?",
     "options": [
       "Mọi thao tác phải thực hiện bằng điều khiển từ xa thông qua giao diện người máy hoặc hệ thống giám sát điều khiển. Thao tác tại chỗ chỉ được phép thực hiện khi GIS không có điện.",
       "Mọi thao tác phải thực hiện bằng điều khiển tại chỗ khi GIS không có điện.",
@@ -3122,7 +3122,7 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, đối với những người được phép tiến hành công tác hàn, điều kiện nào không đúng (không cần thiết)?",
     "options": [
-      "Được đào tạo về chuyên môn về phóng chống thiên tai và cứu nạn cứu hộ.",
+      "Được đào tạo về chuyên môn về phòng chống thiên tai và cứu nạn cứu hộ.",
       "Được huấn luyện, bồi dưỡng nghiệp vụ phòng cháy chữa cháy và được cấp giấy chứng nhận huấn luyện nghiệp vụ phòng cháy và chữa cháy.",
       "Sử dụng đầy đủ các PTBVCN: mặt nạ có kính hàn, quần áo, mũ, găng tay bằng vật liệu khó cháy, cách điện và chịu được các tác động cơ học.",
       "Được đào tạo về chuyên môn, có chứng chỉ hoặc do cơ sở đào tạo hợp pháp cấp; Được huấn luyện, kiểm tra sát hạch về quy trình kỹ thuật an toàn - bảo hộ lao động và có thẻ an toàn."
@@ -3144,7 +3144,7 @@ const QUESTION_BANK = [
     "id": 261
   },
   {
-    "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, khi hành điện, hàn hơi, điều cấm nào không đúng (không phù hợp)?",
+    "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, khi hàn điện, hàn hơi, điều cấm nào không đúng (không phù hợp)?",
     "options": [
       "Không được tiến hành đồng thời cả hàn hơi và hàn điện trong các thùng kín; B. Cấm hàn khi có các chất dễ bắt lửa như xăng, axêton, spirit trắng ở gần vị trí hàn.",
       "Cấm hàn ở khoảng cách dưới 5m so với vị trí để các chất dễ cháy nổ.",
@@ -3195,7 +3195,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, khi vào làm việc với hệ thống ắc quy phải thực hiện trang phục BHLĐ nào?",
     "options": [
       "Mặc quần áo BHLĐ và đeo găng tay cao su để bảo vệ cơ thể khỏi bị ảnh hưởng do axít hoặc kiềm.",
-      "Đeo kính bảo vệ mắt và găng tay cách điện để bảo vệ cơ thể khỏi bị điện giât.",
+      "Đeo kính bảo vệ mắt và găng tay cách điện để bảo vệ cơ thể khỏi bị điện giật.",
       "Mặc quần áo chuyên dụng, đeo kính bảo vệ mắt và găng tay cao su để bảo vệ cơ thể khỏi bị ảnh hưởng do axít hoặc kiềm.",
       "Mặc quần áo chuyên dụng, đeo kính hàn bảo vệ mắt và găng tay cao su để bảo vệ cơ thể khỏi bị ảnh hưởng do axít hoặc kiềm."
     ],
@@ -3264,7 +3264,7 @@ const QUESTION_BANK = [
     "id": 271
   },
   {
-    "question": "Theo Theo Quy trình An toàn thủy, cơ, nhiệt, hóa thì điều cấm nào sau đây không đúng khi làm việc, sử dụng và pha chế ắc quy?",
+    "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa thì điều cấm nào sau đây không đúng khi làm việc, sử dụng và pha chế ắc quy?",
     "options": [
       "Cấm hút thuốc, sử dụng bật lửa, lò sưởi trong buồng chứa ắc-quy B. Cấm để nước cất và dung dịch trung hoà ở chỗ cửa ra vào của buồng ắc-quy.",
       "Cấm đổ nước cất vào axít để pha chế thành dung dịch.",
@@ -3386,10 +3386,10 @@ const QUESTION_BANK = [
   {
     "question": "Khi thực hiện thao tác xa, sau khi kiểm tra đủ điều kiện cần thực hiện thao tác, người giám sát và người thao tác thực hiện như thế nào là đúng?",
     "options": [
-      "Người giám sát đọc tất cả các lệnh tháo tác xong, người thao tác tiến hành thực hiện xong trên màn hình HMI/SCADA. thì báo cáo lại.",
-      "Người giám sát đọcđọc lệnh thao tác (tên thiết bị cần thao tác), người thao tác tiến hành thực hiện xong trên màn hình HMI/SCADA. thì báo cáo lại.",
+      "Người giám sát đọc tất cả các lệnh thao tác xong, người thao tác tiến hành thực hiện xong trên màn hình HMI/SCADA. thì báo cáo lại.",
+      "Người giám sát đọc lệnh thao tác (tên thiết bị cần thao tác), người thao tác tiến hành thực hiện xong trên màn hình HMI/SCADA. thì báo cáo lại.",
       "Người giám sát đọc lệnh (tên phiếu thao tác hoặc tên đường dây, thiết bị điện cần thao tác), người thao tác nhắc lại lệnh và thực hiện thao tác đường dây, thiết bị điện trên màn hình HMI/SCADA.",
-      "Không cần người giám sat, người thao tác tự xem và thực hiện xong thì báo cáo lại."
+      "Không cần người giám sát, người thao tác tự xem và thực hiện xong thì báo cáo lại."
     ],
     "correct": 2,
     "category": "TBA",
@@ -3567,7 +3567,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn điện khi kiểm tra chổi than khi máy đang chạy phải thực hiện như thế nào?",
     "options": [
       "Mang găng cách điện và đi ủng cách điện. Có thể dùng tay tiếp xúc đồng thời với hai cực tính khác nhau của máy. nếu không có dòng điện kích từ thì vẫn được xem như đang có điện.",
-      "Đi ủng cách cách điện. Cấm dùng tay tiếp xúc đồng thời với hai cực tính khác nhau của máy. nếu không có dòng điện kích từ thì vẫn được xem như đang có điện.",
+      "Đi ủng cách điện. Cấm dùng tay tiếp xúc đồng thời với hai cực tính khác nhau của máy. nếu không có dòng điện kích từ thì vẫn được xem như đang có điện.",
       "Phải dùng sào cách điện để thực hiện công việc. Cấm dùng tay tiếp xúc đồng thời với hai cực tính khác nhau của máy. nếu không có dòng điện kích từ thì vẫn được xem như đang có điện.",
       "Mang găng cách điện và cài chặt vào cổ tay. Cấm dùng tay tiếp xúc đồng thời với hai cực tính khác nhau của máy. nếu không có dòng điện kích từ thì vẫn được xem như đang có điện."
     ],
@@ -3614,7 +3614,7 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn điện, quy định khi sửa chữa vành tiếp xúc của Rotor, vành góp của bộ kích từ máy phát như thế nào?",
     "options": [
-      "Cho phép tiến hành tiện và mài các vành tiếp xúc của Startor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo PTT. Phải sử dụng các công cụ bảo vệ mặt và mắt khỏi các tác động cơ khí.",
+      "Cho phép tiến hành tiện và mài các vành tiếp xúc của Stator, mài vành góp của bộ kích từ máy phát khi sửa chữa theo PTT. Phải sử dụng các công cụ bảo vệ mặt và mắt khỏi các tác động cơ khí.",
       "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải xây dựng Phương án an toàn.",
       "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải sử dụng phương tiện cách điện cho người làm việc.",
       "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải sử dụng các công cụ bảo vệ mặt và mắt khỏi các tác động cơ khí."
@@ -3759,7 +3759,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, nội dung nào không đúng (không cần thiết) trong quy định công tác chuẩn bị sửa chữa các thiết bị quay?",
     "options": [
       "Thiết bị đã dừng, động cơ và các thiết bị điện đã được cắt điện, các van đã được đặt đến vị trí an toàn cho việc thực hiện công việc sửa chữa.",
-      "Các thiết bị liên quan phải được treo biển cấm thao thao tác, khóa an toàn (nếu có). Phải có các biển báo an toàn cho các động cơ điện đã được cắt điện và thiết bị khởi động để báo hiệu cấm đóng điện và vận hành các van.",
+      "Các thiết bị liên quan phải được treo biển cấm thao tác, khóa an toàn (nếu có). Phải có các biển báo an toàn cho các động cơ điện đã được cắt điện và thiết bị khởi động để báo hiệu cấm đóng điện và vận hành các van.",
       "Thiết bị đã được kiểm định đúng quy định pháp luật, còn hạn kiểm định.",
       "Khu vực làm việc phải có biển báo “ Khu vực đang làm việc” hoặc các biển báo tương tự theo quy định hiện hành."
     ],
@@ -3797,7 +3797,7 @@ const QUESTION_BANK = [
       "Kiểm tra thiết bị quay ngay. Cấm dùng cát mà phải dùng bình chữa cháy (CO2, MFZ) để dập lửa.",
       "Lập tức ngừng thiết bị, cắt điện. Cấm dùng cát mà phải dùng bình chữa cháy (CO2, MFZ) để dập lửa.",
       "Lập tức ngừng thiết bị, cắt điện. Dùng cát và bình chữa cháy (CO2, MFZ) để dập lửa.",
-      "Báo cáo lãnh đạo đợn vị ngay. Dùng bình chữa cháy (CO2, MFZ) để dập lửa."
+      "Báo cáo lãnh đạo đơn vị ngay. Dùng bình chữa cháy (CO2, MFZ) để dập lửa."
     ],
     "correct": 1,
     "category": "NMD",
@@ -3845,7 +3845,7 @@ const QUESTION_BANK = [
       "Phải có sơ đồ buộc móc tải, sơ đồ di chuyển tải và chỉ rõ trình tự thực hiện các thao tác, yêu cầu về kích thước, vật liệu, công nghệ, các thiết bị phụ trợ.",
       "Phải có Phương án di chuyển tải và chỉ rõ trình tự thực hiện các thao tác, yêu cầu về kích thước, vật liệu, công nghệ, các thiết bị phụ trợ.",
       "Phải có hồ sơ lý lịch thiết bị nâng đầy đủ khi di chuyển tải và chỉ rõ trình tự thực hiện các thao tác, yêu cầu về kích thước, vật liệu, công nghệ, các thiết bị phụ trợ.",
-      "Các thiết bị nang phải còn hạnh định thử nghiệm, lập kế hoạch thi công, chỉ rõ trình tự thực hiện các thao tác, yêu cầu về kích thước, vật liệu, công nghệ, các thiết bị phụ trợ."
+      "Các thiết bị nâng phải còn kiểm định thử nghiệm, lập kế hoạch thi công, chỉ rõ trình tự thực hiện các thao tác, yêu cầu về kích thước, vật liệu, công nghệ, các thiết bị phụ trợ."
     ],
     "correct": 0,
     "category": "NMD",
@@ -3939,9 +3939,9 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, phải ngừng hoạt động của cầu trục, cần trục khi nào?",
     "options": [
       "Khi phát hiện các vết nứt ở những chỗ quan trọng của kết cấu kim loại, biến dạng dư của kết cấu kim loại; Phanh của bất kỳ một cơ cấu nào bị hỏng; Móc, cáp, ròng rọc, tang bị mòn, bị rạn nứt.",
-      "Khi phát hiện các vết nứt ở những chỗ quan trọng của kết cấu kim loại, biến dạng dư của kết cấu kim loại; Phanh của bất kỳ một cơ cấu nào bị hỏng; thiết bị không còn hạnh định thử nghiệm.",
+      "Khi phát hiện các vết nứt ở những chỗ quan trọng của kết cấu kim loại, biến dạng dư của kết cấu kim loại; Phanh của bất kỳ một cơ cấu nào bị hỏng; thiết bị không còn kiểm định thử nghiệm.",
       "Khi không phát hiện các vết nứt ở những chỗ quan trọng của kết cấu kim loại, biến dạng dư của kết cấu kim loại; Phanh, móc, cáp, ròng rọc, tang bị mòn, bị rạn nứt.",
-      "Khi phát hiện các nguy hiểm tại buồng điều khiển thết bị; Phanh của bất kỳ một cơ cấu nào bị hỏng; Móc, cáp, ròng rọc, tang bị mòn, bị rạn nứt."
+      "Khi phát hiện các nguy hiểm tại buồng điều khiển thiết bị; Phanh của bất kỳ một cơ cấu nào bị hỏng; Móc, cáp, ròng rọc, tang bị mòn, bị rạn nứt."
     ],
     "correct": 0,
     "category": "NMD",
@@ -3953,7 +3953,7 @@ const QUESTION_BANK = [
       "Cử người theo dõi sửa chữa, thay thế các chi tiết, bộ phận đã bị hư hỏng, mòn quá quy định cho phép.",
       "Phải có sổ để theo dõi bảo dưỡng định kỳ; theo dõi sửa chữa, thay thế các chi tiết, bộ phận đã bị hư hỏng, mòn quá quy định cho phép.",
       "Phải có sổ để theo dõi mức tiêu hao nhiên liệu và kiểm tra các chi tiết, bộ phận đã bị hư hỏng, mòn quá quy định cho phép.",
-      "Quản đốc phân xường xe phải theo dõi sửa chữa, thay thế các chi tiết, bộ phận đã bị hư hỏng, mòn quá quy định cho phép."
+      "Quản đốc phân xưởng xe phải theo dõi sửa chữa, thay thế các chi tiết, bộ phận đã bị hư hỏng, mòn quá quy định cho phép."
     ],
     "correct": 1,
     "category": "NMD",
@@ -4024,7 +4024,7 @@ const QUESTION_BANK = [
     "options": [
       "Mỗi chủng loại xe nâng hàng phải có quy trình vận hành an toàn; Có sổ theo dõi quá trình bảo trì, bảo dưỡng, sửa chữa định kỳ.",
       "Mỗi xe nâng hàng phải có quy trình vận hành an toàn; cử người theo dõi quá trình bảo trì, bảo dưỡng, sửa chữa định kỳ.",
-      "Mỗi xe nâng hàng phải có quy trình vận hành an toàn; hàng ngàyngười vận hành xe phải theo dõi quá trình bảo trì, bảo dưỡng, sửa chữa định kỳ.",
+      "Mỗi xe nâng hàng phải có quy trình vận hành an toàn; hàng ngày người vận hành xe phải theo dõi quá trình bảo trì, bảo dưỡng, sửa chữa định kỳ.",
       "Mỗi xe nâng hàng phải có quy trình vận hành an toàn; Có sổ theo dõi quá trình bảo trì, bảo dưỡng, sửa chữa định kỳ."
     ],
     "correct": 3,
@@ -4058,7 +4058,7 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, quy định những nội dung kiểm tra trước  khi sử dụng pa lăng xích kéo tay thì nội dung nào không đúng (không phù hợp)?",
     "options": [
-      "Pa lăng còn đang trong thời hạn kiểm định; B. Trục, cóc hãm, dây xích, móc phải đảm bảo an toàn mớ i cho phé p sử dụng;",
+      "Pa lăng còn đang trong thời hạn kiểm định; B. Trục, cóc hãm, dây xích, móc phải đảm bảo an toàn mớ i cho phép sử dụng;",
       "Vị trí treo pa lăng phải rộng rãi, không gần đường giao thông và đô thị.",
       "Vật cần nâng phù hợ p với tải trọng cho phé p của pa lăng; Vị trí treo pa lăng phải chắc chắn, chịu được toàn bộ tải trọng.",
       "Đáp án D"
@@ -4082,7 +4082,7 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, điều cấm nào không đúng trong quy định khi sử dụng pa lăng xích kéo tay?",
     "options": [
-      "Cấm kiểm tra an toàn khi bắt đầu nâng tait trọng lên.",
+      "Cấm kiểm tra an toàn khi bắt đầu nâng tải trọng lên.",
       "Cấm để dây xích bị xoắn hay thắt nút, vận hành pa lăng khi chốt móc bị hỏng; C. Cấm treo vật nặng lơ lửng trên pa lăng khi không có người giám sát; Cấm dùng xích của pa lăng để quàng vào vật cần nâng; D. Nâng tải trọng lớn hơn giá trị cho phé p của pa lăng; Để người đứng dưới tải trọng",
       "Đáp án C",
       "Đáp án D"
@@ -4215,7 +4215,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, khi vào làm việc với hệ thống ắc quy phải thực hiện trang phục BHLĐ nào?",
     "options": [
       "Mặc quần áo BHLĐ và đeo găng tay cao su để bảo vệ cơ thể khỏi bị ảnh hưởng do axít hoặc kiềm.",
-      "Đeo kính bảo vệ mắt và găng tay cách điện để bảo vệ cơ thể khỏi bị điện giât.",
+      "Đeo kính bảo vệ mắt và găng tay cách điện để bảo vệ cơ thể khỏi bị điện giật.",
       "Mặc quần áo chuyên dụng, đeo kính bảo vệ mắt và găng tay cao su để bảo vệ cơ thể khỏi bị ảnh hưởng do axít hoặc kiềm.",
       "Mặc quần áo chuyên dụng, đeo kính hàn bảo vệ mắt và găng tay cao su để bảo vệ cơ thể khỏi bị ảnh hưởng do axít hoặc kiềm."
     ],
@@ -4368,7 +4368,7 @@ const QUESTION_BANK = [
     "id": 363
   },
   {
-    "question": "Theo Quy trình An toàn điện, việc bảo dưỡng chổi than khi động cơ điện đang làm việc, nội dung nào không bắt buộc phải thự c hiện?",
+    "question": "Theo Quy trình An toàn điện, việc bảo dưỡng chổi than khi động cơ điện đang làm việc, nội dung nào không bắt buộc phải thực hiện?",
     "options": [
       "Phải lập Phương án TCTC và BPAT mới được thực hiện",
       "Nhân viên được đào tạo cho nhiệm vụ này và sử dụng các công cụ bảo vệ mặt và mắt, quần áo bảo hộ, đề phòng việc cuốn đi bởi các phần quay của động cơ điện; Sử dụng giày và thảm cách điện; C. Sử dụng giày, găng tay và thảm cách điện để làm việc. Không đồng thời tiếp xúc tay tới các phần mang điện của hai cực hoặc phần mang điện và phần được nối đất.",
@@ -4409,7 +4409,7 @@ const QUESTION_BANK = [
       "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải sử dụng các công cụ bảo vệ mặt và mắt khỏi các tác động cơ khí.",
       "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo PTT. Phải sử dụng các công cụ bảo vệ mặt và mắt khỏi các tác động cơ khí.",
       "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải xây dựng Phương án an toàn.",
-      "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor , mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải sử dụng phương tiện cách điện cho người làm việc."
+      "Cho phép tiến hành tiện và mài các vành tiếp xúc của Rotor, mài vành góp của bộ kích từ máy phát khi sửa chữa theo mệnh lệnh. Phải sử dụng phương tiện cách điện cho người làm việc."
     ],
     "correct": 0,
     "category": "NMD",
@@ -4473,38 +4473,337 @@ const CATEGORIES_INFO = {
   "NMD": 78
 };
 
-function getRandomQuestions(totalQuestions = 30, settings = null) {
-  if (!settings) {
-    const shuffled = [...QUESTION_BANK].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(totalQuestions, shuffled.length));
+// ===== Anti-Repetition Helpers =====
+
+const QUESTION_SELECTION_DEFAULTS = {
+  recentExamCount: 3,
+  cooldownExams: 3,
+  maxRepeatRatio: 0.2,
+  recentPenalty: 1.2,
+  totalPenalty: 0.35,
+  rotationMode: true,
+  conceptMaxPerExam: 1,
+  difficultyTargets: null,
+  categoryFallbacks: null,
+  allowCrossCategoryFill: true,
+  seed: null,
+  historyKeyPrefix: 'exam_history',
+};
+
+function normalizeKeyPart(value) {
+  const cleaned = String(value || '').trim().toLowerCase();
+  return encodeURIComponent(cleaned).replace(/%20/g, '-');
+}
+
+function getDeviceId() {
+  if (typeof localStorage === 'undefined') return 'device-unknown';
+  const key = 'quiz_device_id';
+  const existing = localStorage.getItem(key);
+  if (existing) return existing;
+  const newId = `device-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  localStorage.setItem(key, newId);
+  return newId;
+}
+
+function getHistoryKey(options) {
+  const prefix = options?.historyKeyPrefix || 'exam_history';
+  const deviceId = getDeviceId();
+  const user = (typeof state !== 'undefined' && state.user) || (typeof quizSettings !== 'undefined' && quizSettings.user);
+  const nameKey = user?.fullName ? normalizeKeyPart(user.fullName) : '';
+  const birthKey = user?.birthDate ? normalizeKeyPart(user.birthDate) : '';
+  if (nameKey && birthKey) {
+    return `${prefix}::${deviceId}::${nameKey}::${birthKey}`;
+  }
+  return `${prefix}::${deviceId}`;
+}
+
+function getExamHistory(options) {
+  try {
+    if (typeof localStorage === 'undefined') return [];
+    const key = getHistoryKey(options);
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+    const legacyRaw = localStorage.getItem(options?.historyKeyPrefix || 'exam_history');
+    if (!legacyRaw) return [];
+    const legacy = JSON.parse(legacyRaw);
+    return Array.isArray(legacy) ? legacy : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function sortHistoryByTime(history) {
+  return [...history].sort((a, b) => {
+    const ta = a.savedAt || a.exam?.endTime || '';
+    const tb = b.savedAt || b.exam?.endTime || '';
+    return tb.localeCompare(ta);
+  });
+}
+
+function getRecentQuestionIdsFromHistory(history, lastNExams) {
+  if (!Array.isArray(history) || history.length === 0 || lastNExams <= 0) return new Set();
+  const sorted = sortHistoryByTime(history);
+  const recentIds = new Set();
+  sorted.slice(0, lastNExams).forEach(record => {
+    const ids = record.exam?.questionIds;
+    if (Array.isArray(ids)) ids.forEach(id => recentIds.add(id));
+  });
+  return recentIds;
+}
+
+function buildQuestionStats(history, recentExamCount) {
+  const sorted = sortHistoryByTime(history);
+  const totalCountById = new Map();
+  const recentCountById = new Map();
+  const recentIds = new Set();
+
+  sorted.forEach((record, idx) => {
+    const ids = record.exam?.questionIds;
+    if (!Array.isArray(ids)) return;
+    ids.forEach(id => {
+      totalCountById.set(id, (totalCountById.get(id) || 0) + 1);
+      if (idx < recentExamCount) {
+        recentCountById.set(id, (recentCountById.get(id) || 0) + 1);
+        recentIds.add(id);
+      }
+    });
+  });
+
+  return { sorted, totalCountById, recentCountById, recentIds };
+}
+
+function hashStringToSeed(value) {
+  const str = String(value || '');
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createSeededRng(seed) {
+  let a = (seed >>> 0) || 1;
+  return function rng() {
+    a |= 0;
+    a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function getExamSeed(options) {
+  if (options?.seed !== null && options?.seed !== undefined) return options.seed;
+  const user = (typeof state !== 'undefined' && state.user) || (typeof quizSettings !== 'undefined' && quizSettings.user) || {};
+  const attempt = user.attemptNumber || '';
+  const today = new Date();
+  const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  return `${user.fullName || ''}|${user.birthDate || ''}|${attempt}|${dateKey}`;
+}
+
+function shuffleWithRng(items, rng) {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function weightedSample(items, count, weightFn, rng) {
+  const pool = [...items];
+  const selected = [];
+  while (selected.length < count && pool.length > 0) {
+    const weights = pool.map(weightFn);
+    const total = weights.reduce((sum, w) => sum + w, 0);
+    if (total <= 0) {
+      selected.push(...shuffleWithRng(pool, rng).slice(0, count - selected.length));
+      break;
+    }
+    let r = rng() * total;
+    let idx = 0;
+    for (; idx < pool.length; idx++) {
+      r -= weights[idx];
+      if (r <= 0) break;
+    }
+    selected.push(pool[idx]);
+    pool.splice(idx, 1);
+  }
+  return selected;
+}
+
+function normalizeDifficultyTargets(targets) {
+  if (!targets || typeof targets !== 'object') return null;
+  const entries = Object.entries(targets).filter(([, v]) => typeof v === 'number' && v > 0);
+  if (entries.length === 0) return null;
+  const total = entries.reduce((sum, [, v]) => sum + v, 0);
+  const normalized = {};
+  entries.forEach(([k, v]) => {
+    normalized[k] = v / total;
+  });
+  return normalized;
+}
+
+function selectFromPool(pool, count, context) {
+  if (count <= 0) return [];
+  const { stats, options, rng, selectedIds, selectedConcepts, maxRecentAllowed } = context;
+  const { recentCountById, totalCountById, recentIds, cooldownIds } = stats;
+  const conceptLimit = options.conceptMaxPerExam || 0;
+  if (typeof context.recentSelectedCount !== 'number') context.recentSelectedCount = 0;
+
+  const filterByConstraints = (list, allowCooldown) => list.filter(q => {
+    if (selectedIds.has(q.id)) return false;
+    if (!allowCooldown && cooldownIds.has(q.id)) return false;
+    if (conceptLimit > 0 && q.conceptId) {
+      const current = selectedConcepts.get(q.conceptId) || 0;
+      if (current >= conceptLimit) return false;
+    }
+    return true;
+  });
+
+  const pickWeighted = (candidates, needed) => {
+    return weightedSample(candidates, needed, q => {
+      const recentCount = recentCountById.get(q.id) || 0;
+      const totalCount = totalCountById.get(q.id) || 0;
+      let weight = 1;
+      if (recentCount > 0) weight /= (1 + recentCount * options.recentPenalty);
+      if (totalCount > 0) weight /= (1 + totalCount * (options.rotationMode ? (options.totalPenalty * 1.5) : options.totalPenalty));
+      if (options.rotationMode && totalCount === 0) weight *= 1.5;
+      return Math.max(weight, 0.0001);
+    }, rng);
+  };
+
+  let candidates = filterByConstraints(pool, false);
+  if (candidates.length < count) {
+    candidates = filterByConstraints(pool, true);
   }
 
-  // Định nghĩa thứ tự các category
-  const categoryOrder = ['PCCC', 'QT_ATD', 'ATD', 'TBA', 'NMD'];
+  const selected = [];
+  while (selected.length < count && candidates.length > 0) {
+    const needed = count - selected.length;
+    const batch = pickWeighted(candidates, needed);
+    if (batch.length === 0) break;
 
+    for (const q of batch) {
+      const isRecent = recentIds.has(q.id);
+      if (isRecent && context.recentSelectedCount >= maxRecentAllowed) continue;
+      selected.push(q);
+      selectedIds.add(q.id);
+      if (q.conceptId) {
+        selectedConcepts.set(q.conceptId, (selectedConcepts.get(q.conceptId) || 0) + 1);
+      }
+      if (isRecent) context.recentSelectedCount += 1;
+      if (selected.length >= count) break;
+    }
+
+    candidates = candidates.filter(q => !selectedIds.has(q.id));
+  }
+
+  return selected;
+}
+
+function selectQuestionsSmart(questionPool, count, context) {
+  if (count <= 0) return [];
+  const difficultyTargets = normalizeDifficultyTargets(context.options.difficultyTargets);
+  if (!difficultyTargets) {
+    return selectFromPool(questionPool, count, context);
+  }
+
+  const grouped = {};
+  questionPool.forEach(q => {
+    const diff = q.difficulty || 'unknown';
+    if (!grouped[diff]) grouped[diff] = [];
+    grouped[diff].push(q);
+  });
+
+  const selected = [];
+  Object.entries(difficultyTargets).forEach(([diff, ratio]) => {
+    if (selected.length >= count) return;
+    const desired = Math.round(count * ratio);
+    if (!grouped[diff] || desired <= 0) return;
+    const picked = selectFromPool(grouped[diff], desired, context);
+    selected.push(...picked);
+  });
+
+  if (selected.length < count) {
+    const remainingPool = questionPool.filter(q => !context.selectedIds.has(q.id));
+    selected.push(...selectFromPool(remainingPool, count - selected.length, context));
+  }
+
+  return selected.slice(0, count);
+}
+
+// ===== Main Question Selector =====
+
+function getRandomQuestions(totalQuestions = 30, settings = null, selectionOptions = null) {
+  const options = {
+    ...QUESTION_SELECTION_DEFAULTS,
+    ...(typeof quizSettings !== 'undefined' ? quizSettings.questionSelection : null),
+    ...(selectionOptions || null),
+  };
+
+  const history = getExamHistory(options);
+  const stats = buildQuestionStats(history, options.recentExamCount);
+  const cooldownIds = getRecentQuestionIdsFromHistory(history, options.cooldownExams);
+  const seed = getExamSeed(options);
+  const rng = createSeededRng(hashStringToSeed(seed));
+
+  const context = {
+    stats: {
+      ...stats,
+      cooldownIds,
+    },
+    options,
+    rng,
+    selectedIds: new Set(),
+    selectedConcepts: new Map(),
+    maxRecentAllowed: Math.max(0, Math.floor(totalQuestions * options.maxRepeatRatio)),
+  };
+
+  if (!settings || Object.keys(settings).length === 0) {
+    return selectQuestionsSmart(QUESTION_BANK, totalQuestions, context)
+      .slice(0, totalQuestions);
+  }
+
+  const categoryOrder = ['PCCC', 'QT_ATD', 'ATD', 'TBA', 'NMD'];
   let selectedQuestions = [];
 
-  // Chọn câu hỏi theo thứ tự category
   for (const category of categoryOrder) {
-    const count = settings[category] || 0;
-    if (count <= 0) continue;
+    const count = settings[category];
+    if (!count || count <= 0) continue;
 
-    const categoryQuestions = QUESTION_BANK.filter(q => q.category === category);
-    // Xáo trộn câu hỏi trong category
-    const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
-    // Thêm vào mảng kết quả (giữ nguyên thứ tự category)
-    selectedQuestions = selectedQuestions.concat(shuffled.slice(0, Math.min(count, shuffled.length)));
+    const basePool = QUESTION_BANK.filter(q => q.category === category);
+    let pool = basePool;
+
+    const fallbacks = options.categoryFallbacks?.[category];
+    if (Array.isArray(fallbacks) && fallbacks.length > 0) {
+      const fallbackPool = QUESTION_BANK.filter(q => fallbacks.includes(q.category));
+      const merged = [...basePool, ...fallbackPool];
+      const seen = new Set();
+      pool = merged.filter(q => {
+        if (seen.has(q.id)) return false;
+        seen.add(q.id);
+        return true;
+      });
+    }
+
+    const picked = selectQuestionsSmart(pool, count, context);
+    selectedQuestions = selectedQuestions.concat(picked);
   }
 
-  // Nếu thiếu câu hỏi, bổ sung từ các category còn lại
   if (selectedQuestions.length < totalQuestions) {
-    const selectedIds = new Set(selectedQuestions.map(q => q.id));
-    const remaining = QUESTION_BANK.filter(q => !selectedIds.has(q.id));
-    const shuffled = [...remaining].sort(() => Math.random() - 0.5);
-    selectedQuestions = selectedQuestions.concat(shuffled.slice(0, totalQuestions - selectedQuestions.length));
+    const remaining = QUESTION_BANK.filter(q => !context.selectedIds.has(q.id));
+    if (options.allowCrossCategoryFill) {
+      selectedQuestions = selectedQuestions.concat(
+        selectQuestionsSmart(remaining, totalQuestions - selectedQuestions.length, context)
+      );
+    }
   }
 
-  // KHÔNG xáo trộn lại - giữ nguyên thứ tự theo category
   return selectedQuestions.slice(0, totalQuestions);
 }
 

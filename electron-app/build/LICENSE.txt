@@ -1,0 +1,6 @@
+﻿THỎA THUẬN SỬ DỤNG PHẦN MỀM
+
+1. Phần mềm này được phát triển nội bộ cho DAHC.
+2. Không sử dụng, sao chép, phân phối trái phép ngoài phạm vi DAHC.
+
+Vui lòng đọc và đồng ý với các điều khoản trước khi cài đặt.

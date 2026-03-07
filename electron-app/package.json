@@ -1,0 +1,66 @@
+{
+  "name": "quiz-dahc",
+  "version": "26.03.1",
+  "description": "Phiên bản 26.03.1 - Trắc nghiệm An toàn điện",
+  "main": "main.js",
+  "scripts": {
+    "start": "set ELECTRON_RUN_AS_NODE=&& electron .",
+    "build:check": "powershell -ExecutionPolicy Bypass -File ./scripts/preflight-build.ps1",
+    "build": "npm run build:check && electron-builder --win",
+    "build:portable": "npm run build:check && electron-builder --win portable",
+    "sign:preflight": "powershell -ExecutionPolicy Bypass -File ./scripts/check-signing.ps1",
+    "build:signed": "npm run build:check && npm run sign:preflight && electron-builder --win",
+    "build:signed:portable": "npm run build:check && npm run sign:preflight && electron-builder --win portable",
+    "sign:verify": "powershell -ExecutionPolicy Bypass -File ./scripts/verify-signature.ps1 -Path ./dist -Strict"
+  },
+  "author": "DAHC",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.dahc.quiz",
+    "productName": "Trắc nghiệm An toàn điện - DAHC",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Trắc nghiệm An toàn điện - DAHC",
+      "include": "build/installer.nsh",
+      "license": "build/LICENSE.txt",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "QuizDAHC_Portable_${version}.exe"
+    }
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

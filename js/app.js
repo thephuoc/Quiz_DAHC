@@ -16,8 +16,8 @@ const state = {
     answers: {},          // { questionId: selectedOptionIndex }
     questionStatus: {},   // { questionId: 'not-visited' | 'visited' | 'answered' | 'flagged' }
     timer: {
-        duration: 20 * 60, // 20 minutes in seconds
-        remaining: 20 * 60,
+        duration: 30 * 60, // 30 minutes in seconds
+        remaining: 30 * 60,
         interval: null
     },
     startTime: null,
@@ -39,17 +39,36 @@ function incrementAttemptCount(fullName, birthDate) {
 
 // ===== Exam History Management =====
 const EXAM_HISTORY_KEY = 'exam_history';
-const PDF_CACHE_KEY = 'pdf_cache';
+const DEVICE_ID_KEY = 'quiz_device_id';
 const SESSION_KEY = 'exam_session'; // Lưu trạng thái bài thi hiện tại
 const MAX_HISTORY_ITEMS = 100; // Giữ tối đa 100 kết quả
-const MAX_PDF_CACHE = 10; // Giữ tối đa 10 PDF gần nhất (do giới hạn dung lượng LocalStorage ~5MB)
 const AUTO_SAVE_INTERVAL = 30000; // Tự động lưu mỗi 30 giây
 
 let autoSaveTimer = null;
 
+function isElectronRuntime() {
+    return !!(window.electronAPI && window.electronAPI.isElectron);
+}
+
+async function syncExamRuntimeState(inProgress, extra = {}) {
+    if (!isElectronRuntime() || typeof window.electronAPI.setExamState !== 'function') return;
+    try {
+        await window.electronAPI.setExamState({
+            inProgress: !!inProgress,
+            candidateName: state.user.fullName || null,
+            startedAt: state.startTime ? state.startTime.toISOString() : null,
+            timerRemaining: state.timer.remaining,
+            ...extra
+        });
+    } catch (error) {
+        console.warn('Failed to sync exam state:', error);
+    }
+}
+
 function saveExamToHistory(examResult) {
     try {
-        let history = getExamHistory();
+        const historyKey = getHistoryStorageKey(state.user.fullName, state.user.birthDate);
+        let history = getExamHistory(historyKey);
 
         // Thêm kết quả mới vào đầu danh sách
         history.unshift(examResult);
@@ -59,7 +78,16 @@ function saveExamToHistory(examResult) {
             history = history.slice(0, MAX_HISTORY_ITEMS);
         }
 
-        localStorage.setItem(EXAM_HISTORY_KEY, JSON.stringify(history));
+        localStorage.setItem(historyKey, JSON.stringify(history));
+
+        if (historyKey !== EXAM_HISTORY_KEY) {
+            let legacyHistory = getExamHistory(EXAM_HISTORY_KEY);
+            legacyHistory.unshift(examResult);
+            if (legacyHistory.length > MAX_HISTORY_ITEMS) {
+                legacyHistory = legacyHistory.slice(0, MAX_HISTORY_ITEMS);
+            }
+            localStorage.setItem(EXAM_HISTORY_KEY, JSON.stringify(legacyHistory));
+        }
         console.log('✅ Đã lưu kết quả thi vào lịch sử');
         return true;
     } catch (error) {
@@ -68,10 +96,16 @@ function saveExamToHistory(examResult) {
     }
 }
 
-function getExamHistory() {
+function getExamHistory(customKey = null) {
     try {
-        const historyJson = localStorage.getItem(EXAM_HISTORY_KEY);
-        return historyJson ? JSON.parse(historyJson) : [];
+        const key = customKey || getHistoryStorageKey(state.user.fullName, state.user.birthDate);
+        const historyJson = localStorage.getItem(key);
+        if (historyJson) return JSON.parse(historyJson);
+        if (key !== EXAM_HISTORY_KEY) {
+            const legacyJson = localStorage.getItem(EXAM_HISTORY_KEY);
+            return legacyJson ? JSON.parse(legacyJson) : [];
+        }
+        return [];
     } catch (error) {
         console.error('❌ Lỗi đọc lịch sử thi:', error);
         return [];
@@ -79,11 +113,8 @@ function getExamHistory() {
 }
 
 function getExamHistoryByUser(fullName, birthDate) {
-    const history = getExamHistory();
-    return history.filter(exam =>
-        exam.user.fullName === fullName &&
-        exam.user.birthDate === birthDate
-    );
+    const key = getHistoryStorageKey(fullName, birthDate);
+    return getExamHistory(key);
 }
 
 function clearExamHistory() {
@@ -104,7 +135,8 @@ function buildExamResult(correctAnswers, totalQuestions, isPassed, timeUp = fals
             startTime: state.startTime ? state.startTime.toISOString() : null,
             endTime: state.endTime ? state.endTime.toISOString() : null,
             duration: calculateDuration(),
-            timeUp: timeUp
+            timeUp: timeUp,
+            questionIds: state.questions.map(q => q.id)
         },
         result: {
             correctAnswers: correctAnswers,
@@ -113,76 +145,153 @@ function buildExamResult(correctAnswers, totalQuestions, isPassed, timeUp = fals
             isPassed: isPassed,
             score: Math.round((correctAnswers / totalQuestions) * 100)
         },
-        answers: { ...state.answers },
-        questions: state.questions.map(q => ({
+        // Chỉ lưu tóm tắt câu trả lời (tiết kiệm dung lượng)
+        answersSummary: state.questions.map(q => ({
             id: q.id,
-            question: q.question,
-            options: q.options,
-            correct: q.correct,
-            userAnswer: state.answers[q.id],
-            category: q.category
+            cat: q.category,
+            ua: state.answers[q.id] !== undefined ? state.answers[q.id] : -1,
+            ca: q.correct,
+            ok: state.answers[q.id] === q.correct
         })),
         savedAt: new Date().toISOString()
     };
 }
 
-// ===== PDF Cache Management =====
-function savePDFToCache(examId, fileName, pdfBase64) {
-    try {
-        let cache = getPDFCache();
+// ===== PDF Cache Management (IndexedDB - hỗ trợ dung lượng lớn) =====
+const PDF_DB_NAME = 'QuizDAHC_PDFCache';
+const PDF_DB_VERSION = 1;
+const PDF_STORE_NAME = 'pdfs';
+const MAX_PDF_CACHE = 40; // Giữ tối đa 40 PDF (IndexedDB cho phép lưu trữ lớn hơn nhiều so với LocalStorage)
 
-        // Thêm PDF mới vào đầu
-        cache.unshift({
+function openPDFDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(PDF_DB_NAME, PDF_DB_VERSION);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(PDF_STORE_NAME)) {
+                const store = db.createObjectStore(PDF_STORE_NAME, { keyPath: 'examId' });
+                store.createIndex('savedAt', 'savedAt', { unique: false });
+            }
+        };
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+async function savePDFToCache(examId, fileName, pdfBase64) {
+    try {
+        const db = await openPDFDatabase();
+        const tx = db.transaction(PDF_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(PDF_STORE_NAME);
+
+        // Lưu PDF mới
+        store.put({
             examId: examId,
             fileName: fileName,
             pdfData: pdfBase64,
             savedAt: new Date().toISOString()
         });
 
-        // Giới hạn số lượng PDF lưu trữ
-        if (cache.length > MAX_PDF_CACHE) {
-            cache = cache.slice(0, MAX_PDF_CACHE);
-        }
+        await new Promise((resolve, reject) => {
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+        });
 
-        localStorage.setItem(PDF_CACHE_KEY, JSON.stringify(cache));
-        console.log('📄 Đã lưu PDF vào bộ nhớ tạm:', fileName);
+        // Kiểm tra và xóa bớt nếu vượt quá giới hạn
+        await trimPDFCache();
+
+        console.log('📄 Đã lưu PDF vào IndexedDB:', fileName);
+        db.close();
         return true;
     } catch (error) {
-        // Có thể do vượt quá dung lượng LocalStorage
         console.error('❌ Lỗi lưu PDF vào cache:', error);
-        // Thử xóa bớt cache cũ và lưu lại
-        try {
-            let cache = getPDFCache();
-            if (cache.length > 3) {
-                cache = cache.slice(0, 3); // Chỉ giữ 3 PDF gần nhất
-                localStorage.setItem(PDF_CACHE_KEY, JSON.stringify(cache));
-                // Thử lưu lại
-                return savePDFToCache(examId, fileName, pdfBase64);
-            }
-        } catch (e) {
-            console.error('❌ Không thể lưu PDF do dung lượng LocalStorage đầy');
-        }
         return false;
     }
 }
 
-function getPDFCache() {
+async function trimPDFCache() {
     try {
-        const cacheJson = localStorage.getItem(PDF_CACHE_KEY);
-        return cacheJson ? JSON.parse(cacheJson) : [];
+        const db = await openPDFDatabase();
+        const tx = db.transaction(PDF_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(PDF_STORE_NAME);
+        const index = store.index('savedAt');
+
+        const countRequest = store.count();
+        const count = await new Promise((resolve) => {
+            countRequest.onsuccess = () => resolve(countRequest.result);
+        });
+
+        if (count > MAX_PDF_CACHE) {
+            // Lấy các mục cũ nhất để xóa
+            const toDelete = count - MAX_PDF_CACHE;
+            let deleted = 0;
+            const cursorRequest = index.openCursor();
+
+            await new Promise((resolve) => {
+                cursorRequest.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor && deleted < toDelete) {
+                        cursor.delete();
+                        deleted++;
+                        cursor.continue();
+                    } else {
+                        resolve();
+                    }
+                };
+            });
+        }
+
+        db.close();
+    } catch (error) {
+        console.error('❌ Lỗi trim PDF cache:', error);
+    }
+}
+
+async function getPDFCache() {
+    try {
+        const db = await openPDFDatabase();
+        const tx = db.transaction(PDF_STORE_NAME, 'readonly');
+        const store = tx.objectStore(PDF_STORE_NAME);
+
+        const allItems = await new Promise((resolve, reject) => {
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+
+        db.close();
+        // Sắp xếp theo thời gian mới nhất
+        return allItems.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
     } catch (error) {
         console.error('❌ Lỗi đọc PDF cache:', error);
         return [];
     }
 }
 
-function getPDFFromCache(examId) {
-    const cache = getPDFCache();
-    return cache.find(item => item.examId === examId);
+async function getPDFFromCache(examId) {
+    try {
+        const db = await openPDFDatabase();
+        const tx = db.transaction(PDF_STORE_NAME, 'readonly');
+        const store = tx.objectStore(PDF_STORE_NAME);
+
+        const item = await new Promise((resolve, reject) => {
+            const request = store.get(examId);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+
+        db.close();
+        return item || null;
+    } catch (error) {
+        console.error('❌ Lỗi đọc PDF từ cache:', error);
+        return null;
+    }
 }
 
-function downloadPDFFromCache(examId) {
-    const pdfItem = getPDFFromCache(examId);
+async function downloadPDFFromCache(examId) {
+    const pdfItem = await getPDFFromCache(examId);
     if (!pdfItem) {
         alert('Không tìm thấy PDF trong bộ nhớ tạm!');
         return false;
@@ -211,9 +320,57 @@ function downloadPDFFromCache(examId) {
     return true;
 }
 
-function clearPDFCache() {
-    localStorage.removeItem(PDF_CACHE_KEY);
-    console.log('🗑️ Đã xóa toàn bộ PDF cache');
+async function clearPDFCache() {
+    try {
+        const db = await openPDFDatabase();
+        const tx = db.transaction(PDF_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(PDF_STORE_NAME);
+        store.clear();
+
+        await new Promise((resolve, reject) => {
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+        });
+
+        db.close();
+        console.log('🗑️ Đã xóa toàn bộ PDF cache');
+    } catch (error) {
+        console.error('❌ Lỗi xóa PDF cache:', error);
+    }
+}
+
+// Migrate dữ liệu cũ từ LocalStorage sang IndexedDB (chạy 1 lần)
+async function migratePDFCacheToIndexedDB() {
+    try {
+        const oldCache = localStorage.getItem('pdf_cache');
+        if (!oldCache) return;
+
+        const pdfItems = JSON.parse(oldCache);
+        if (!pdfItems || pdfItems.length === 0) return;
+
+        console.log(`🔄 Đang di chuyển ${pdfItems.length} PDF từ LocalStorage sang IndexedDB...`);
+
+        const db = await openPDFDatabase();
+        const tx = db.transaction(PDF_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(PDF_STORE_NAME);
+
+        for (const item of pdfItems) {
+            store.put(item);
+        }
+
+        await new Promise((resolve, reject) => {
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+        });
+
+        db.close();
+
+        // Xóa dữ liệu cũ từ LocalStorage
+        localStorage.removeItem('pdf_cache');
+        console.log('✅ Đã di chuyển PDF cache sang IndexedDB và xóa dữ liệu cũ từ LocalStorage');
+    } catch (error) {
+        console.error('❌ Lỗi di chuyển PDF cache:', error);
+    }
 }
 
 // ===== Session Management (Khôi phục bài thi khi F5/lỗi) =====
@@ -232,6 +389,7 @@ function saveSession() {
         };
         localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
         console.log('💾 Đã tự động lưu bài thi');
+        syncExamRuntimeState(true, { sessionSavedAt: sessionData.savedAt });
         return true;
     } catch (error) {
         console.error('❌ Lỗi lưu session:', error);
@@ -267,6 +425,22 @@ function loadSession() {
 function clearSession() {
     localStorage.removeItem(SESSION_KEY);
     console.log('🗑️ Đã xóa session');
+    syncExamRuntimeState(false, { sessionSavedAt: null });
+}
+
+function buildExamResultFromCurrentState(timeUp = false) {
+    let correctAnswers = 0;
+    const totalQuestions = state.questions.length;
+
+    state.questions.forEach(question => {
+        const userAnswer = state.answers[question.id];
+        if (userAnswer === question.correct) {
+            correctAnswers++;
+        }
+    });
+
+    const isPassed = correctAnswers >= 27;
+    return buildExamResult(correctAnswers, totalQuestions, isPassed, timeUp);
 }
 
 function hasActiveSession() {
@@ -344,13 +518,14 @@ const elements = {
     resultDepartment: document.getElementById('resultDepartment'),
     resultDate: document.getElementById('resultDate'),
     resultDuration: document.getElementById('resultDuration'),
-    scoreCircle: document.getElementById('scoreCircle'),
     scoreNumber: document.getElementById('scoreNumber'),
     correctCount: document.getElementById('correctCount'),
     wrongCount: document.getElementById('wrongCount'),
     resultStatus: document.getElementById('resultStatus'),
     btnExportPDF: document.getElementById('btnExportPDF'),
-    btnRetry: document.getElementById('btnRetry')
+    btnRetry: document.getElementById('btnRetry'),
+    btnOpenPdfFolder: document.getElementById('btnOpenPdfFolder'),
+    btnGoHome: document.getElementById('btnGoHome')
 };
 
 // ===== Initialization =====
@@ -361,13 +536,38 @@ function init() {
     setupEventListeners();
     setupDateInputEvents();
     setupBeforeUnloadWarning();
+    setupElectronGuards();
+
+    // Migrate PDF cache cũ từ LocalStorage sang IndexedDB
+    migratePDFCacheToIndexedDB();
 
     // Kiểm tra có session cũ không
     checkForExistingSession();
 }
 
-function checkForExistingSession() {
+function setupElectronGuards() {
+    if (!isElectronRuntime() || typeof window.electronAPI.onForceStayInExam !== 'function') return;
+    window.electronAPI.onForceStayInExam(() => {
+        showToast('Đang trong thời gian thi, không thể thoát ứng dụng.');
+    });
+}
+
+async function checkForExistingSession() {
     const session = loadSession();
+    if (!session || !session.questions || session.questions.length === 0) return;
+
+    if (isElectronRuntime() && typeof window.electronAPI.getExamState === 'function') {
+        try {
+            const runtime = await window.electronAPI.getExamState();
+            if (runtime?.success && runtime?.state?.inProgress) {
+                continueSession();
+                return;
+            }
+        } catch (error) {
+            console.warn('Failed to read runtime state:', error);
+        }
+    }
+
     if (session && session.questions && session.questions.length > 0) {
         // Có session cũ - hỏi người dùng
         showSessionRecoveryDialog(session);
@@ -410,11 +610,19 @@ function continueSession() {
     if (restoreSession()) {
         // Chuyển sang màn hình thi
         switchScreen('quiz');
+
+        // Cập nhật UI
+        elements.userName.textContent = state.user.fullName;
+        elements.examCode.textContent = `BÀI THI - ${state.user.department} - (Khôi phục)`;
+        elements.btnFinish.textContent = `KẾT THÚC ${state.questions.length} CÂU`;
+
         renderQuestion();
         renderQuestionGrid();
-        updateTimer();
-        startTimer();
+        updateNavigationButtons();
+        updateTimerDisplay(); // Hiển thị thời gian còn lại
+        resumeTimer(); // Tiếp tục đếm ngược (KHÔNG reset)
         startAutoSave();
+        syncExamRuntimeState(true);
 
         // Hiển thị thông báo
         showToast('✅ Đã khôi phục bài thi của bạn!');
@@ -542,6 +750,12 @@ function setupEventListeners() {
     // Result actions
     elements.btnExportPDF.addEventListener('click', exportToPDF);
     elements.btnRetry.addEventListener('click', handleRetry);
+    if (elements.btnOpenPdfFolder) {
+        elements.btnOpenPdfFolder.addEventListener('click', openSavedPDFFolder);
+    }
+    if (elements.btnGoHome) {
+        elements.btnGoHome.addEventListener('click', goHomeFromResult);
+    }
 
     // Download exam
     elements.downloadExam.addEventListener('click', (e) => {
@@ -607,9 +821,9 @@ function showLoginError(message) {
 // ===== Quiz Logic =====
 function startQuiz() {
     // Load settings and get random questions based on settings
-    const settings = typeof quizSettings !== 'undefined' ? quizSettings : { totalQuestions: 30, durationMinutes: 20, categories: {} };
+    const settings = typeof quizSettings !== 'undefined' ? quizSettings : { totalQuestions: 30, durationMinutes: 30, categories: {} };
     const totalQuestions = settings.totalQuestions || 30;
-    const durationMinutes = settings.durationMinutes || 20;
+    const durationMinutes = settings.durationMinutes || 30;
 
     // Get random questions with category settings
     state.questions = getRandomQuestions(totalQuestions, settings.categories);
@@ -652,6 +866,7 @@ function startQuiz() {
 
     // Bắt đầu tự động lưu bài thi
     startAutoSave();
+    syncExamRuntimeState(true);
 }
 
 function renderQuestion() {
@@ -822,10 +1037,35 @@ function updateNavigationButtons() {
 // ===== Timer =====
 function startTimer() {
     state.timer.remaining = state.timer.duration;
+    // Lưu timestamp bắt đầu đếm ngược
+    state.timer._startedAt = Date.now();
+    state.timer._initialRemaining = state.timer.remaining;
     updateTimerDisplay();
+    _runTimerInterval();
+}
+
+// Tiếp tục timer (KHÔNG reset remaining) - dùng khi khôi phục session
+function resumeTimer() {
+    // Kiểm tra nếu đã hết giờ
+    if (state.timer.remaining <= 0) {
+        finishQuiz(true);
+        return;
+    }
+    // Lưu timestamp tại thời điểm resume
+    state.timer._startedAt = Date.now();
+    state.timer._initialRemaining = state.timer.remaining;
+    updateTimerDisplay();
+    _runTimerInterval();
+}
+
+function _runTimerInterval() {
+    // Dừng interval cũ nếu có
+    stopTimer();
 
     state.timer.interval = setInterval(() => {
-        state.timer.remaining--;
+        // Tính remaining dựa trên thời gian thực (chống drift khi tab bị background)
+        const elapsed = Math.floor((Date.now() - state.timer._startedAt) / 1000);
+        state.timer.remaining = Math.max(0, state.timer._initialRemaining - elapsed);
         updateTimerDisplay();
 
         if (state.timer.remaining <= 0) {
@@ -894,7 +1134,7 @@ function finishQuiz(timeUp = false) {
     calculateAndShowResult(timeUp);
 }
 
-function calculateAndShowResult(timeUp = false) {
+async function calculateAndShowResult(timeUp = false) {
     let correctAnswers = 0;
 
     state.questions.forEach(question => {
@@ -905,11 +1145,23 @@ function calculateAndShowResult(timeUp = false) {
     });
 
     const wrongAnswers = state.questions.length - correctAnswers;
-    const isPassed = correctAnswers >= 28;
+    const isPassed = correctAnswers >= 27;
 
     // === LƯU KẾT QUẢ VÀO LOCALSTORAGE (DỰ PHÒNG) ===
     const examResult = buildExamResult(correctAnswers, state.questions.length, isPassed, timeUp);
-    const saved = saveExamToHistory(examResult);
+    saveExamToHistory(examResult);
+
+    // [ELECTRON] Lưu file JSON kết quả (backup cứng) ngay lập tức
+    if (isElectronRuntime() && typeof window.electronAPI.saveExamArtifacts === 'function') {
+        window.electronAPI.saveExamArtifacts({
+            examResult: examResult,
+            fileName: 'auto_save.pdf', // Tên tham khảo, backend tự đặt tên chuẩn
+            pdfBase64: null
+        }).then(res => {
+            if (res.success) console.log('✅ Đã lưu JSON backup:', res.paths?.resultJsonPath);
+            else console.error('❌ Lỗi lưu JSON backup:', res.error);
+        });
+    }
 
     // Update result screen
     elements.resultName.textContent = state.user.fullName;
@@ -922,29 +1174,46 @@ function calculateAndShowResult(timeUp = false) {
     elements.correctCount.textContent = correctAnswers;
     elements.wrongCount.textContent = wrongAnswers;
 
-    // Update status
+    // Cập nhật tổng số câu (động theo cài đặt admin)
+    const scoreTotalEl = document.getElementById('scoreTotal');
+    if (scoreTotalEl) scoreTotalEl.textContent = `/${state.questions.length}`;
+
+    // Cập nhật SVG Ring Chart
+    const scoreRingFill = document.getElementById('scoreRingFill');
+    const percentage = correctAnswers / state.questions.length;
+    const circumference = 2 * Math.PI * 52; // r=52
+    if (scoreRingFill) {
+        scoreRingFill.style.strokeDashoffset = circumference; // reset
+        setTimeout(() => {
+            scoreRingFill.style.strokeDashoffset = circumference * (1 - percentage);
+        }, 100);
+    }
+
+    // Cập nhật banner và trạng thái
+    const resultBanner = document.getElementById('resultBanner');
     if (isPassed) {
         elements.resultIcon.textContent = '🎉';
         elements.resultTitle.textContent = 'Chúc Mừng!';
-        elements.scoreCircle.classList.remove('fail');
+        if (resultBanner) resultBanner.classList.remove('fail');
+        if (scoreRingFill) scoreRingFill.classList.remove('fail');
         elements.resultStatus.className = 'result-status pass';
         elements.resultStatus.textContent = '✓ ĐẠT';
     } else {
         elements.resultIcon.textContent = '😔';
         elements.resultTitle.textContent = 'Kết Quả Bài Thi';
-        elements.scoreCircle.classList.add('fail');
+        if (resultBanner) resultBanner.classList.add('fail');
+        if (scoreRingFill) scoreRingFill.classList.add('fail');
         elements.resultStatus.className = 'result-status fail';
         elements.resultStatus.textContent = '✗ KHÔNG ĐẠT';
     }
 
     switchScreen('result');
 
-    // Hiển thị thông báo khi hết giờ (KHÔNG tự động xuất PDF)
-    if (timeUp) {
-        showTimeUpNotification(correctAnswers, state.questions.length, isPassed, saved);
-    } else if (saved) {
-        // Hiển thị thông báo nhỏ xác nhận đã lưu vào lịch sử
-        showHistorySavedNotification();
+    // Hiển thị nút xuất PDF và mở thư mục ngay sau khi nộp bài
+    if (isElectronRuntime()) {
+        togglePostExportButtons(true);
+    } else {
+        togglePostExportButtons(false);
     }
 }
 
@@ -963,17 +1232,17 @@ function showTimeUpNotification(correctAnswers, totalQuestions, isPassed, histor
         <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:9998;">
             <div style="background:white;padding:30px 50px;border-radius:15px;text-align:center;max-width:420px;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
                 <div style="font-size:50px;margin-bottom:15px;">⏰</div>
-                <h2 style="color:#f44336;margin:0 0 15px 0;font-size:24px;">HẾT GIỜ LÀM BÀI!</h2>
-                <p style="color:#666;font-size:16px;margin:0 0 15px 0;">Bài thi của bạn đã được tự động nộp.</p>
-                <div style="background:${isPassed ? '#E8F5E9' : '#FFEBEE'};padding:15px;border-radius:10px;margin:15px 0;">
-                    <div style="font-size:32px;font-weight:bold;color:${isPassed ? '#4CAF50' : '#f44336'};">${correctAnswers}/${totalQuestions}</div>
-                    <div style="font-size:14px;color:#666;margin-top:5px;">${isPassed ? '✓ ĐẠT' : '✗ KHÔNG ĐẠT'}</div>
+                <h2 style="color:#EF4444;margin:0 0 15px 0;font-size:24px;">HẾT GIỜ LÀM BÀI!</h2>
+                <p style="color:#475569;font-size:16px;margin:0 0 15px 0;">Bài thi của bạn đã được tự động nộp.</p>
+                <div style="background:${isPassed ? '#ECFDF5' : '#FEF2F2'};padding:15px;border-radius:10px;margin:15px 0;">
+                    <div style="font-size:32px;font-weight:bold;color:${isPassed ? '#10B981' : '#EF4444'};">${correctAnswers}/${totalQuestions}</div>
+                    <div style="font-size:14px;color:#475569;margin-top:5px;">${isPassed ? '✓ ĐẠT' : '✗ KHÔNG ĐẠT'}</div>
                 </div>
                 ${historySaved ?
-            '<p style="color:#4CAF50;font-size:13px;margin:10px 0 0 0;">✅ Kết quả đã được lưu vào lịch sử (dự phòng)</p>' :
-            '<p style="color:#ff9800;font-size:13px;margin:10px 0 0 0;">⚠️ Không thể lưu lịch sử</p>'
+            '\x3cp style="color:#10B981;font-size:13px;margin:10px 0 0 0;">✅ Kết quả đã được lưu vào lịch sử (dự phòng)\x3c/p>' :
+            '\x3cp style="color:#F59E0B;font-size:13px;margin:10px 0 0 0;">⚠️ Không thể lưu lịch sử\x3c/p>'
         }
-                <p style="color:#2196F3;font-size:14px;margin:15px 0 0 0;">📄 Vui lòng nhấn "<strong>Xuất PDF</strong>" để lưu kết quả</p>
+                <p style="color:#0D9488;font-size:14px;margin:15px 0 0 0;">📄 Vui lòng nhấn "<strong>Xuất PDF</strong>" để lưu kết quả</p>
             </div>
         </div>
     `;
@@ -995,19 +1264,19 @@ function showHistorySavedNotification() {
     const notificationDiv = document.createElement('div');
     notificationDiv.id = 'historySavedNotification';
     notificationDiv.innerHTML = `
-        <div style="position:fixed;bottom:20px;left:20px;background:#4CAF50;color:white;padding:15px 25px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,0.3);z-index:9999;max-width:350px;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <span style="font-size:24px;">💾</span>
-                <div>
-                    <div style="font-weight:bold;font-size:14px;">Đã lưu vào lịch sử</div>
-                    <div style="font-size:12px;opacity:0.9;margin-top:3px;">Kết quả được dự phòng trong trường hợp lỗi</div>
+        <div style="position:fixed;bottom:20px;left:20px;background:#10B981;color:white;padding:14px 18px;border-radius:12px;box-shadow:0 4px 16px rgba(16,185,129,0.25);z-index:9999;max-width:320px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:20px;line-height:1;">💾</span>
+                <div style="flex:1;">
+                    <div style="font-weight:600;font-size:13px;">Đã lưu kết quả & PDF</div>
+                    <div style="font-size:10px;opacity:0.75;margin-top:2px;">📄 PDF tự động lưu vào bộ nhớ tạm</div>
                 </div>
             </div>
         </div>
     `;
     document.body.appendChild(notificationDiv);
 
-    // Tự động ẩn sau 3 giây
+    // Tự động ẩn sau 4 giây
     setTimeout(() => {
         const notification = document.getElementById('historySavedNotification');
         if (notification) {
@@ -1015,10 +1284,254 @@ function showHistorySavedNotification() {
             notification.style.opacity = '0';
             setTimeout(() => notification.remove(), 500);
         }
-    }, 3000);
+    }, 4000);
 }
 
-// ===== PDF Export =====
+/**
+ * Loại bỏ dấu tiếng Việt để tạo tên file an toàn
+ */
+function removeVietnameseTones(str) {
+    if (!str) return '';
+
+    str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Thay thế các ký tự đặc biệt tiếng Việt
+    str = str.replace(/đ/g, 'd').replace(/Đ/g, 'D');
+
+    // Loại bỏ các ký tự không phải chữ cái, số, khoảng trắng
+    str = str.replace(/[^a-zA-Z0-9\s]/g, '');
+
+    return str;
+}
+
+// ===== PDF Generation (hàm dùng chung) =====
+async function _generatePDFDoc(footerNote) {
+    const { jsPDF } = window.jspdf;
+
+    // Calculate results
+    let correctAnswers = 0;
+    const questionResults = [];
+    const totalQuestions = state.questions.length;
+
+    state.questions.forEach((question, index) => {
+        const userAnswerIndex = state.answers[question.id];
+        const isCorrect = userAnswerIndex === question.correct;
+        if (isCorrect) correctAnswers++;
+
+        questionResults.push({
+            index: index + 1,
+            question: question.question,
+            options: question.options,
+            userAnswer: userAnswerIndex !== undefined ? userAnswerIndex : -1,
+            correctAnswer: question.correct,
+            isCorrect: isCorrect
+        });
+    });
+
+    const isPassed = correctAnswers >= 27;
+
+    const questionsHtml = questionResults.map(q => `
+        <div class="pdf-block pdf-question" style="margin-bottom:10px;padding:10px;border-left:3px solid ${q.isCorrect ? '#10B981' : '#EF4444'};background:#F8FAFC;border-radius:6px;">
+            <div style="font-weight:bold;font-size:11px;color:#1E293B;margin-bottom:6px;">
+                <span style="color:${q.isCorrect ? '#10B981' : '#EF4444'};margin-right:5px;">${q.isCorrect ? '✓' : '✗'}</span>
+                Câu ${q.index}: ${q.question}
+            </div>
+            <div style="margin-left:15px;font-size:10px;">
+                ${q.options.map((opt, idx) => {
+        const prefix = String.fromCharCode(65 + idx);
+        let bgColor = '#fff';
+        let borderColor = '#E2E8F0';
+        let textColor = '#1E293B';
+        let symbol = '';
+
+        if (idx === q.correctAnswer) {
+            bgColor = '#ECFDF5';
+            borderColor = '#10B981';
+            symbol = '✓ ';
+        }
+        if (idx === q.userAnswer && idx !== q.correctAnswer) {
+            bgColor = '#FEF2F2';
+            borderColor = '#EF4444';
+            symbol = '✗ ';
+        }
+
+        return `<div style="padding:5px 8px;margin:3px 0;border-radius:4px;background:${bgColor};border:1px solid ${borderColor};color:${textColor};">
+                            <strong>${symbol}${prefix}.</strong> ${opt}
+                        </div>`;
+    }).join('')}
+            </div>
+            ${q.userAnswer === -1 ? '<div style="color:#F59E0B;margin-top:5px;margin-left:15px;font-size:9px;font-style:italic;">⚠ Chưa trả lời</div>' : ''}
+        </div>
+    `).join('');
+
+    // Create hidden container for rendering
+    const container = document.createElement('div');
+    container.id = 'pdfContainer';
+    container.style.cssText = 'position:fixed;left:-9999px;top:0;width:760px;background:white;font-family:Roboto,Arial,sans-serif;padding:20px;';
+
+    container.innerHTML = `
+        <div class="pdf-root" style="max-width:760px;">
+            <div class="pdf-block pdf-header" style="margin-bottom:14px;">
+                <div style="text-align:center;margin-bottom:14px;">
+                    <h1 style="color:#0D9488;font-size:22px;margin:0 0 8px 0;">KẾT QUẢ BÀI THI TRẮC NGHIỆM</h1>
+                    <div style="height:2px;background:linear-gradient(90deg, #0D9488, #5EEAD4, #0D9488);"></div>
+                </div>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;">
+                    <tr>
+                        <td style="padding:4px 0;width:25%;"><strong>Họ và tên:</strong></td>
+                        <td style="padding:4px 0;width:25%;">${state.user.fullName}</td>
+                        <td style="padding:4px 0;width:25%;"><strong>Đơn vị:</strong></td>
+                        <td style="padding:4px 0;width:25%;">${state.user.department}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;"><strong>Chữ ký thí sinh:</strong></td>
+                        <td colspan="3" style="padding:4px 0;border-bottom:1px dotted #999;min-height:30px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;"><strong>Ngày sinh:</strong></td>
+                        <td style="padding:4px 0;">${formatDateDisplay(state.user.birthDate)}</td>
+                        <td style="padding:4px 0;"><strong>Ngày thi:</strong></td>
+                        <td style="padding:4px 0;">${formatDateTime(state.startTime)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:4px 0;"><strong>Thời gian:</strong></td>
+                        <td style="padding:4px 0;">${calculateDuration()}</td>
+                        <td style="padding:4px 0;"><strong>Lần thi:</strong></td>
+                        <td style="padding:4px 0;">Lần ${state.user.attemptNumber}</td>
+                    </tr>
+                </table>
+                <div style="padding:12px;background:${isPassed ? '#ECFDF5' : '#FEF2F2'};border-radius:8px;">
+                    <table style="width:100%;font-size:11px;">
+                        <tr>
+                            <td style="text-align:center;width:33%;">
+                                <div style="font-size:28px;font-weight:bold;color:${isPassed ? '#10B981' : '#EF4444'};">${correctAnswers}/${totalQuestions}</div>
+                                <div style="font-size:10px;color:#475569;">Điểm số</div>
+                            </td>
+                            <td style="text-align:center;width:34%;">
+                                <div style="font-size:14px;font-weight:bold;color:#10B981;">✓ ${correctAnswers} đúng</div>
+                                <div style="font-size:14px;font-weight:bold;color:#EF4444;margin-top:3px;">✗ ${totalQuestions - correctAnswers} sai</div>
+                            </td>
+                            <td style="text-align:center;width:33%;">
+                                <div style="font-size:18px;font-weight:bold;color:${isPassed ? '#10B981' : '#EF4444'};">
+                                    ${isPassed ? 'ĐẠT' : 'KHÔNG ĐẠT'}
+                                </div>
+                                <div style="font-size:10px;color:#475569;">Chuẩn: 27/${totalQuestions}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="pdf-block pdf-section-title" style="margin:10px 0 6px 0;">
+                <h2 style="color:#0D9488;font-size:14px;border-bottom:2px solid #0D9488;padding-bottom:5px;margin:0;">
+                    CHI TIẾT CÂU TRẢ LỜI
+                </h2>
+            </div>
+
+            <div class="pdf-questions">
+                ${questionsHtml}
+            </div>
+
+            <div class="pdf-block pdf-footer" style="margin-top:12px;text-align:center;padding-top:8px;border-top:1px solid #E2E8F0;font-size:9px;color:#94A3B8;">
+                <div>Hệ thống thi trắc nghiệm DAHC</div>
+                <div style="margin-top:3px;">${footerNote}: ${formatDateTime(new Date())}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(container);
+
+    // Wait for fonts and rendering
+    await document.fonts.ready;
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    const doc = new jsPDF('p', 'mm', 'a4', true);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 10;
+    const contentWidth = pageWidth - margin * 2;
+    let cursorY = margin;
+
+    const blocks = Array.from(container.querySelectorAll('.pdf-block'));
+
+    for (const block of blocks) {
+        const canvas = await html2canvas(block, {
+            scale: 3, // Tăng từ 2 lên 3 để sắc nét hơn
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            windowWidth: 760,
+            imageTimeout: 0,
+            removeContainer: true
+        });
+        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+
+        if (cursorY + imgHeight > pageHeight - margin) {
+            doc.addPage();
+            cursorY = margin;
+        }
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.89); // Quality 89% - Cân bằng giữa chất lượng và dung lượng
+        doc.addImage(imgData, 'JPEG', margin, cursorY, contentWidth, imgHeight, undefined, 'SLOW'); // Dùng SLOW thay vì FAST
+        cursorY += imgHeight + 2;
+    }
+
+    document.body.removeChild(container);
+
+    // Tạo tên file: KetQua_TenKhongDau_DonVi_LanX_NgayGio.pdf
+    const nameSafe = removeVietnameseTones(state.user.fullName).replace(/\s+/g, '_');
+    const deptSafe = removeVietnameseTones(state.user.department || '').replace(/\s+/g, '');
+    const fileName = `KetQua_${nameSafe}_${deptSafe}_L${state.user.attemptNumber}_${formatDateFile(new Date())}.pdf`;
+
+    return { doc, fileName };
+}
+
+// ===== Auto Save PDF to Cache (không download, chỉ lưu vào IndexedDB) =====
+async function autoSavePDFToCache(examResult = null) {
+    console.log('📄 Đang tự động tạo PDF để lưu cache...');
+
+    try {
+        const { doc, fileName } = await _generatePDFDoc('Tự động lưu');
+
+        // Lưu PDF vào IndexedDB (KHÔNG download)
+        const pdfBase64 = doc.output('datauristring').split(',')[1];
+        const examId = Date.now();
+        const savedToCache = await savePDFToCache(examId, fileName, pdfBase64);
+
+        if (savedToCache) {
+            console.log('✅ Đã tự động lưu PDF vào cache:', fileName);
+        }
+
+        // Lưu vào file hệ thống (pdf_primary + pdf_backup)
+        let savedToFixed = null;
+        if (isElectronRuntime() && examResult && typeof window.electronAPI.saveExamArtifacts === 'function') {
+            savedToFixed = await window.electronAPI.saveExamArtifacts({
+                examResult,
+                fileName,
+                pdfBase64
+            });
+            if (!savedToFixed?.success) {
+                console.error('❌ Lỗi lưu dữ liệu cố định:', savedToFixed?.error || 'unknown');
+            } else {
+                console.log('✅ Đã lưu PDF vào:', savedToFixed.paths);
+                // Lưu đường dẫn để dùng khi mở thư mục
+                state.lastSavedPdfPath = savedToFixed.paths?.pdfPrimaryPath || null;
+            }
+        }
+
+        return {
+            savedToCache,
+            savedToFixed,
+            fileName,
+            examId
+        };
+    } catch (error) {
+        console.error('❌ Lỗi tự động tạo PDF:', error);
+        return null;
+    }
+}
+
+// ===== PDF Export (download về máy + lưu backup) =====
 async function exportToPDF() {
     // Show loading
     const loadingDiv = document.createElement('div');
@@ -1027,203 +1540,47 @@ async function exportToPDF() {
         <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;">
             <div style="background:white;padding:30px 50px;border-radius:10px;text-align:center;">
                 <div style="font-size:40px;margin-bottom:15px;">📄</div>
-                <div style="font-size:18px;color:#333;">Đang tạo PDF...</div>
-                <div style="font-size:14px;color:#666;margin-top:10px;">Vui lòng đợi...</div>
+                <div style="font-size:18px;color:#1E293B;">Đang tạo PDF...</div>
+                <div style="font-size:14px;color:#475569;margin-top:10px;">Vui lòng đợi...</div>
             </div>
         </div>
     `;
     document.body.appendChild(loadingDiv);
 
     try {
-        const { jsPDF } = window.jspdf;
+        const { doc, fileName } = await _generatePDFDoc('Xuất ngày');
 
-        // Calculate results
-        let correctAnswers = 0;
-        const questionResults = [];
-
-        state.questions.forEach((question, index) => {
-            const userAnswerIndex = state.answers[question.id];
-            const isCorrect = userAnswerIndex === question.correct;
-            if (isCorrect) correctAnswers++;
-
-            questionResults.push({
-                index: index + 1,
-                question: question.question,
-                options: question.options,
-                userAnswer: userAnswerIndex !== undefined ? userAnswerIndex : -1,
-                correctAnswer: question.correct,
-                isCorrect: isCorrect
-            });
-        });
-
-        const isPassed = correctAnswers >= 28;
-
-        const questionsHtml = questionResults.map(q => `
-            <div class="pdf-block pdf-question" style="margin-bottom:10px;padding:10px;border-left:3px solid ${q.isCorrect ? '#4CAF50' : '#f44336'};background:#fafafa;border-radius:6px;">
-                <div style="font-weight:bold;font-size:11px;color:#333;margin-bottom:6px;">
-                    <span style="color:${q.isCorrect ? '#4CAF50' : '#f44336'};margin-right:5px;">${q.isCorrect ? '✓' : '✗'}</span>
-                    Câu ${q.index}: ${q.question}
-                </div>
-                <div style="margin-left:15px;font-size:10px;">
-                    ${q.options.map((opt, idx) => {
-            const prefix = String.fromCharCode(65 + idx);
-            let bgColor = '#fff';
-            let borderColor = '#e0e0e0';
-            let textColor = '#333';
-            let symbol = '';
-
-            if (idx === q.correctAnswer && idx === q.userAnswer) {
-                bgColor = '#C8E6C9';
-                borderColor = '#4CAF50';
-                symbol = '✓ ';
-            } else if (idx === q.correctAnswer) {
-                bgColor = '#C8E6C9';
-                borderColor = '#4CAF50';
-                symbol = '✓ ';
-            } else if (idx === q.userAnswer) {
-                bgColor = '#FFCDD2';
-                borderColor = '#f44336';
-                symbol = '✗ ';
-            }
-
-            return `<div style="padding:5px 8px;margin:3px 0;border-radius:4px;background:${bgColor};border:1px solid ${borderColor};color:${textColor};">
-                                <strong>${symbol}${prefix}.</strong> ${opt}
-                            </div>`;
-        }).join('')}
-                </div>
-                ${q.userAnswer === -1 ? '<div style="color:#ff9800;margin-top:5px;margin-left:15px;font-size:9px;font-style:italic;">⚠ Chưa trả lời</div>' : ''}
-            </div>
-        `).join('');
-
-        // Create hidden container for rendering
-        const container = document.createElement('div');
-        container.id = 'pdfContainer';
-        container.style.cssText = 'position:fixed;left:-9999px;top:0;width:760px;background:white;font-family:Roboto,Arial,sans-serif;padding:20px;';
-
-        // Build HTML content
-        container.innerHTML = `
-            <div class="pdf-root" style="max-width:760px;">
-                <div class="pdf-block pdf-header" style="margin-bottom:14px;">
-                    <div style="text-align:center;margin-bottom:14px;">
-                        <h1 style="color:#2196F3;font-size:22px;margin:0 0 8px 0;">KẾT QUẢ BÀI THI TRẮC NGHIỆM</h1>
-                        <div style="height:2px;background:#2196F3;"></div>
-                    </div>
-                    <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;">
-                        <tr>
-                            <td style="padding:4px 0;width:25%;"><strong>Họ và tên:</strong></td>
-                            <td style="padding:4px 0;width:25%;">${state.user.fullName}</td>
-                            <td style="padding:4px 0;width:25%;"><strong>Đơn vị:</strong></td>
-                            <td style="padding:4px 0;width:25%;">${state.user.department}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:4px 0;"><strong>Chữ ký thí sinh:</strong></td>
-                            <td colspan="3" style="padding:4px 0;border-bottom:1px dotted #999;min-height:30px;"></td>
-                        </tr>
-                        <tr>
-                            <td style="padding:4px 0;"><strong>Ngày sinh:</strong></td>
-                            <td style="padding:4px 0;">${formatDateDisplay(state.user.birthDate)}</td>
-                            <td style="padding:4px 0;"><strong>Ngày thi:</strong></td>
-                            <td style="padding:4px 0;">${formatDateTime(state.startTime)}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:4px 0;"><strong>Thời gian:</strong></td>
-                            <td style="padding:4px 0;">${calculateDuration()}</td>
-                            <td style="padding:4px 0;"><strong>Lần thi:</strong></td>
-                            <td style="padding:4px 0;">Lần ${state.user.attemptNumber}</td>
-                        </tr>
-                    </table>
-                    <div style="padding:12px;background:${isPassed ? '#E8F5E9' : '#FFEBEE'};border-radius:8px;">
-                        <table style="width:100%;font-size:11px;">
-                            <tr>
-                                <td style="text-align:center;width:33%;">
-                                    <div style="font-size:28px;font-weight:bold;color:${isPassed ? '#4CAF50' : '#f44336'};">${correctAnswers}/30</div>
-                                    <div style="font-size:10px;color:#666;">Điểm số</div>
-                                </td>
-                                <td style="text-align:center;width:34%;">
-                                    <div style="font-size:14px;font-weight:bold;color:#4CAF50;">✓ ${correctAnswers} đúng</div>
-                                    <div style="font-size:14px;font-weight:bold;color:#f44336;margin-top:3px;">✗ ${30 - correctAnswers} sai</div>
-                                </td>
-                                <td style="text-align:center;width:33%;">
-                                    <div style="font-size:18px;font-weight:bold;color:${isPassed ? '#4CAF50' : '#f44336'};">
-                                        ${isPassed ? 'ĐẠT' : 'KHÔNG ĐẠT'}
-                                    </div>
-                                    <div style="font-size:10px;color:#666;">Chuẩn: 28/30</div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="pdf-block pdf-section-title" style="margin:10px 0 6px 0;">
-                    <h2 style="color:#2196F3;font-size:14px;border-bottom:2px solid #2196F3;padding-bottom:5px;margin:0;">
-                        CHI TIẾT CÂU TRẢ LỜI
-                    </h2>
-                </div>
-
-                <div class="pdf-questions">
-                    ${questionsHtml}
-                </div>
-
-                <div class="pdf-block pdf-footer" style="margin-top:12px;text-align:center;padding-top:8px;border-top:1px solid #e0e0e0;font-size:9px;color:#999;">
-                    <div>Hệ thống thi trắc nghiệm DAHC</div>
-                    <div style="margin-top:3px;">Xuất ngày: ${formatDateTime(new Date())}</div>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(container);
-
-        // Wait for fonts and rendering
-        await document.fonts.ready;
-        await new Promise(resolve => setTimeout(resolve, 300));
-
-        const doc = new jsPDF('p', 'mm', 'a4', true);
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-        const margin = 10;
-        const contentWidth = pageWidth - margin * 2;
-        let cursorY = margin;
-
-        const blocks = Array.from(container.querySelectorAll('.pdf-block'));
-
-        for (const block of blocks) {
-            const canvas = await html2canvas(block, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff',
-                windowWidth: 760
-            });
-            const imgHeight = (canvas.height * contentWidth) / canvas.width;
-
-            if (cursorY + imgHeight > pageHeight - margin) {
-                doc.addPage();
-                cursorY = margin;
-            }
-
-            const imgData = canvas.toDataURL('image/jpeg', 0.85);
-            doc.addImage(imgData, 'JPEG', margin, cursorY, contentWidth, imgHeight, undefined, 'FAST');
-            cursorY += imgHeight + 2;
-        }
-
-        document.body.removeChild(container);
-
-        // Tạo tên file
-        const fileName = `KetQua_${removeVietnameseTones(state.user.fullName).replace(/\s+/g, '_')}_Lan${state.user.attemptNumber}_${formatDateFile(new Date())}.pdf`;
-
-        // === LƯU PDF VÀO BỘ NHỚ TẠM (LocalStorage) ===
-        const pdfBase64 = doc.output('datauristring').split(',')[1]; // Lấy phần base64
-        const examId = Date.now(); // ID duy nhất cho bài thi này
-        const savedToCache = savePDFToCache(examId, fileName, pdfBase64);
-
-        // Lưu examId vào state để có thể tải lại sau
+        // Lưu vào cache (IndexedDB) để xem lại trong History
+        const pdfBase64 = doc.output('datauristring').split(',')[1];
+        const examId = Date.now();
+        const savedToCache = await savePDFToCache(examId, fileName, pdfBase64);
         state.lastExamId = examId;
 
-        // Tải PDF về thư mục Downloads
+        // Download về máy (file chính)
         doc.save(fileName);
+
+        // Lưu bản dự phòng vào pdf_backup (Electron only)
+        if (isElectronRuntime() && typeof window.electronAPI.saveExamArtifacts === 'function') {
+            const examResult = buildExamResultFromCurrentState(false);
+            const backupResult = await window.electronAPI.saveExamArtifacts({
+                examResult,
+                fileName,
+                pdfBase64
+            });
+            if (backupResult?.success) {
+                console.log('✅ Đã lưu bản dự phòng vào pdf_backup:', backupResult.paths?.pdfBackupPath);
+            } else {
+                console.error('❌ Lỗi lưu backup:', backupResult?.error);
+            }
+        }
 
         // Hiển thị thông báo thành công
         showPDFSuccessNotification(fileName, savedToCache);
+
+        // Hiển thị nút mở thư mục nếu là Electron
+        if (isElectronRuntime()) {
+            togglePostExportButtons(true);
+        }
 
     } catch (error) {
         console.error('Error generating PDF:', error);
@@ -1235,22 +1592,57 @@ async function exportToPDF() {
     }
 }
 
+function togglePostExportButtons(show) {
+    if (elements.btnOpenPdfFolder) {
+        elements.btnOpenPdfFolder.style.display = show ? 'inline-flex' : 'none';
+    }
+    if (elements.btnGoHome) {
+        elements.btnGoHome.style.display = show ? 'inline-flex' : 'none';
+    }
+}
+
+async function openSavedPDFFolder() {
+    if (!isElectronRuntime() || typeof window.electronAPI.openPDFFolder !== 'function') {
+        alert('Tính năng này chỉ khả dụng trên ứng dụng Electron.');
+        return;
+    }
+
+    try {
+        const result = await window.electronAPI.openPDFFolder();
+        if (!result.success) {
+            alert('Không thể mở thư mục PDF: ' + (result.error || 'Lỗi không xác định'));
+        }
+    } catch (error) {
+        console.error('Error opening PDF folder:', error);
+        alert('Đã xảy ra lỗi khi mở thư mục PDF.');
+    }
+}
+
+function goHomeFromResult() {
+    handleRetry();
+}
+
+
+
 // Hiển thị thông báo PDF đã được lưu thành công
 function showPDFSuccessNotification(fileName, savedToCache = false) {
     const cacheMessage = savedToCache
-        ? '<div style="font-size:11px;opacity:0.8;margin-top:5px;color:#E8F5E9;">💾 Đã lưu bản dự phòng vào bộ nhớ tạm</div>'
+        ? '<div style="font-size:10px;opacity:0.75;margin-top:3px;">💾 Đã lưu bản dự phòng</div>'
         : '';
+    const locationText = isElectronRuntime()
+        ? '📂 Đã lưu vào thư mục ứng dụng'
+        : '📂 Đã tải về Downloads';
 
     const successDiv = document.createElement('div');
     successDiv.id = 'pdfSuccessNotification';
     successDiv.innerHTML = `
-        <div style="position:fixed;bottom:20px;right:20px;background:#4CAF50;color:white;padding:20px 30px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,0.3);z-index:9999;max-width:420px;">
-            <div style="display:flex;align-items:flex-start;gap:15px;">
-                <span style="font-size:30px;">✅</span>
-                <div>
-                    <div style="font-weight:bold;font-size:16px;">Đã lưu kết quả!</div>
-                    <div style="font-size:12px;opacity:0.9;margin-top:5px;">📂 File PDF đã được tải về thư mục Downloads</div>
-                    <div style="font-size:11px;opacity:0.7;margin-top:3px;word-break:break-all;">${fileName}</div>
+        <div style="position:fixed;bottom:20px;right:20px;background:#10B981;color:white;padding:14px 18px;border-radius:12px;box-shadow:0 4px 16px rgba(16,185,129,0.25);z-index:9999;max-width:340px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:20px;line-height:1;">✅</span>
+                <div style="flex:1;">
+                    <div style="font-weight:600;font-size:13px;">Đã lưu kết quả!</div>
+                    <div style="font-size:11px;opacity:0.85;margin-top:3px;">${locationText}</div>
+                    <div style="font-size:10px;opacity:0.65;margin-top:2px;word-break:break-all;">${fileName}</div>
                     ${cacheMessage}
                 </div>
             </div>
@@ -1289,8 +1681,29 @@ function formatDateTime(date) {
 }
 
 function formatDateDisplay(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('vi-VN');
+    if (!dateStr) return 'N/A';
+    try {
+        // Xử lý format dd/mm/yyyy
+        if (dateStr.includes('/')) {
+            const parts = dateStr.split('/');
+            if (parts.length === 3) {
+                return dateStr; // Đã đúng format dd/mm/yyyy
+            }
+        }
+        // Xử lý format yyyy-mm-dd
+        if (dateStr.includes('-')) {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+        }
+        // Fallback
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
+        return date.toLocaleDateString('vi-VN');
+    } catch (e) {
+        return dateStr;
+    }
 }
 
 function formatDateFile(date) {
@@ -1316,11 +1729,15 @@ function removeVietnameseTones(str) {
 }
 
 function handleRetry() {
+    stopAutoSave();
+    clearSession();
+
     // Reset state
     state.questions = [];
     state.currentIndex = 0;
     state.answers = {};
     state.questionStatus = {};
+    state.lastSavedPdfPath = null;
     state.timer.remaining = state.timer.duration;
     state.startTime = null;
     state.endTime = null;
@@ -1330,6 +1747,7 @@ function handleRetry() {
 
     // Switch to login
     switchScreen('login');
+    togglePostExportButtons(false);
 }
 
 // ===== Confirmation Modal =====
@@ -1380,3 +1798,60 @@ window.confirmAction = confirmAction;
 window.continueSession = continueSession;
 window.discardSession = discardSession;
 
+
+// ===== Auto Resume Session =====
+function checkAndPromptResume() {
+    const session = loadSession();
+    if (session) {
+        const savedTime = session.savedAt ? new Date(session.savedAt).toLocaleString('vi-VN') : 'KhÃ´ng rÃµ';
+
+        const modalHTML = `
+            <div class="modal-overlay active" id="sessionRecoveryModal" style="z-index: 9999;">
+                <div class="modal-content">
+                    <div class="modal-icon">âš ï¸</div>
+                    <h2 class="modal-title">PhÃ¡t hiá»‡n bÃ i thi chÆ°a hoÃ n táº¥t</h2>
+                    <p class="modal-text">
+                        Há»‡ thá»‘ng Ä‘Ã£ lÆ°u bÃ i thi cá»§a báº¡n lÃºc <b>${savedTime}</b>.<br>
+                        Báº¡n cÃ³ muá»‘n tiáº¿p tá»¥c lÃ m bÃ i khÃ´ng?
+                    </p>
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel" onclick="discardSession()">Bá» qua (LÃ m má»›i)</button>
+                        <button class="modal-btn confirm" onclick="continueSession()">Tiáº¿p tá»¥c lÃ m bÃ i</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+}
+
+// Initialize Resume Logic
+document.addEventListener('DOMContentLoaded', () => {
+    // Chá»‰ kiá»ƒm tra khi Ä‘ang á»Ÿ mÃ n hÃ¬nh login (trang chá»§)
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen && getComputedStyle(loginScreen).display !== 'none') {
+        setTimeout(checkAndPromptResume, 500); // Äá»£i 500ms Ä‘á»ƒ cháº¯c cháº¯n UI Ä‘Ã£ load
+    }
+});
+function normalizeKeyPart(value) {
+    const cleaned = String(value || '').trim().toLowerCase();
+    return encodeURIComponent(cleaned).replace(/%20/g, '-');
+}
+
+function getDeviceId() {
+    const existing = localStorage.getItem(DEVICE_ID_KEY);
+    if (existing) return existing;
+    const newId = 'device-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    localStorage.setItem(DEVICE_ID_KEY, newId);
+    return newId;
+}
+
+function getHistoryStorageKey(fullName, birthDate) {
+    const deviceId = getDeviceId();
+    const nameKey = normalizeKeyPart(fullName);
+    const birthKey = normalizeKeyPart(birthDate);
+    if (nameKey && birthKey) {
+        return `${EXAM_HISTORY_KEY}::${deviceId}::${nameKey}::${birthKey}`;
+    }
+    return `${EXAM_HISTORY_KEY}::${deviceId}`;
+}
