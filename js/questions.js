@@ -4510,9 +4510,9 @@ function getHistoryKey(options) {
   const deviceId = getDeviceId();
   const user = (typeof state !== 'undefined' && state.user) || (typeof quizSettings !== 'undefined' && quizSettings.user);
   const nameKey = user?.fullName ? normalizeKeyPart(user.fullName) : '';
-  const birthKey = user?.birthDate ? normalizeKeyPart(user.birthDate) : '';
-  if (nameKey && birthKey) {
-    return `${prefix}::${deviceId}::${nameKey}::${birthKey}`;
+  const passKey = user?.password ? normalizeKeyPart(user.password) : '';
+  if (nameKey && passKey) {
+    return `${prefix}::${deviceId}::${nameKey}::${passKey}`;
   }
   return `${prefix}::${deviceId}`;
 }
@@ -4602,7 +4602,7 @@ function getExamSeed(options) {
   const attempt = user.attemptNumber || '';
   const today = new Date();
   const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  return `${user.fullName || ''}|${user.birthDate || ''}|${attempt}|${dateKey}`;
+  return `${user.fullName || ''}|${user.password || ''}|${attempt}|${dateKey}`;
 }
 
 function shuffleWithRng(items, rng) {

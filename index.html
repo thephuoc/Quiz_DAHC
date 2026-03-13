@@ -47,15 +47,19 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="birthDate">
-                        <span class="icon">📅</span>
-                        Ngày sinh
+                    <label for="candidatePassword">
+                        <span class="icon">🔑</span>
+                        Mật khẩu
                     </label>
-                    <div class="date-input-wrapper">
-                        <input type="date" id="birthDate" name="birthDate" required>
-                        <span id="birthYearDisplay" class="year-display hidden"></span>
+                    <div class="password-wrapper">
+                        <input type="password" id="candidatePassword" name="candidatePassword" required
+                            placeholder="Nhập mật khẩu">
+                        <button type="button" class="toggle-password" id="toggleCandidatePassword"
+                            title="Hiện/ẩn mật khẩu">
+                            👁️
+                        </button>
                     </div>
-                    <span class="input-hint">Chọn ngày và tháng sinh của bạn</span>
+                    <span class="input-hint">Nhập mật khẩu đã được cung cấp</span>
                 </div>
                 <div id="loginError" class="login-error" style="display: none;"></div>
                 <button type="submit" class="btn-primary btn-start">
@@ -136,10 +140,11 @@
                             <span class="import-icon">👥</span>
                             <div>
                                 <strong>Danh sách thí sinh</strong>
-                                <small>Nạp từ file Excel (cột: Họ tên, Ngày sinh, Đơn vị)</small>
+                                <small>Nạp từ file Excel (cột: Họ tên, Mật khẩu, Đơn vị)</small>
                             </div>
                         </div>
-                        <button class="btn-import" id="btnImportCandidates" title="Chọn file Excel danh sách thí sinh">📂 Chọn file</button>
+                        <button class="btn-import" id="btnImportCandidates"
+                            title="Chọn file Excel danh sách thí sinh">📂 Chọn file</button>
                         <span class="import-status" id="importCandidatesStatus"></span>
                     </div>
                     <div class="import-item">
@@ -150,7 +155,8 @@
                                 <small>Chọn nhiều file Excel (PCCC, QT_ATD, ATD, TBA, NMD)</small>
                             </div>
                         </div>
-                        <button class="btn-import" id="btnImportQuestions" title="Chọn file Excel ngân hàng câu hỏi">📂 Chọn file</button>
+                        <button class="btn-import" id="btnImportQuestions" title="Chọn file Excel ngân hàng câu hỏi">📂
+                            Chọn file</button>
                         <span class="import-status" id="importQuestionsStatus"></span>
                     </div>
                     <div class="import-item">
@@ -301,8 +307,8 @@
                         <span class="info-value" id="resultName"></span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Ngày sinh</span>
-                        <span class="info-value" id="resultBirthDate"></span>
+                        <span class="info-label">Lần thi</span>
+                        <span class="info-value" id="resultAttempt"></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Đơn vị</span>

@@ -7,7 +7,7 @@
 const state = {
     user: {
         fullName: '',
-        birthDate: '',
+        password: '',
         department: '',
         attemptNumber: 1
     },
@@ -25,14 +25,14 @@ const state = {
 };
 
 // ===== Exam Attempt Counter =====
-function getAttemptCount(fullName, birthDate) {
-    const key = `exam_attempts_${fullName}_${birthDate}`;
+function getAttemptCount(fullName, password) {
+    const key = `exam_attempts_${fullName}_${password}`;
     return parseInt(localStorage.getItem(key) || '0');
 }
 
-function incrementAttemptCount(fullName, birthDate) {
-    const key = `exam_attempts_${fullName}_${birthDate}`;
-    const count = getAttemptCount(fullName, birthDate) + 1;
+function incrementAttemptCount(fullName, password) {
+    const key = `exam_attempts_${fullName}_${password}`;
+    const count = getAttemptCount(fullName, password) + 1;
     localStorage.setItem(key, count.toString());
     return count;
 }
@@ -67,7 +67,7 @@ async function syncExamRuntimeState(inProgress, extra = {}) {
 
 function saveExamToHistory(examResult) {
     try {
-        const historyKey = getHistoryStorageKey(state.user.fullName, state.user.birthDate);
+        const historyKey = getHistoryStorageKey(state.user.fullName, state.user.password);
         let history = getExamHistory(historyKey);
 
         // Thêm kết quả mới vào đầu danh sách
@@ -98,7 +98,7 @@ function saveExamToHistory(examResult) {
 
 function getExamHistory(customKey = null) {
     try {
-        const key = customKey || getHistoryStorageKey(state.user.fullName, state.user.birthDate);
+        const key = customKey || getHistoryStorageKey(state.user.fullName, state.user.password);
         const historyJson = localStorage.getItem(key);
         if (historyJson) return JSON.parse(historyJson);
         if (key !== EXAM_HISTORY_KEY) {
@@ -112,8 +112,8 @@ function getExamHistory(customKey = null) {
     }
 }
 
-function getExamHistoryByUser(fullName, birthDate) {
-    const key = getHistoryStorageKey(fullName, birthDate);
+function getExamHistoryByUser(fullName, password) {
+    const key = getHistoryStorageKey(fullName, password);
     return getExamHistory(key);
 }
 
@@ -127,7 +127,6 @@ function buildExamResult(correctAnswers, totalQuestions, isPassed, timeUp = fals
         id: Date.now(), // Unique ID
         user: {
             fullName: state.user.fullName,
-            birthDate: state.user.birthDate,
             department: state.user.department,
             attemptNumber: state.user.attemptNumber
         },
@@ -497,7 +496,7 @@ const elements = {
     // Login
     loginForm: document.getElementById('loginForm'),
     fullNameInput: document.getElementById('fullName'),
-    birthDateInput: document.getElementById('birthDate'),
+    passwordInput: document.getElementById('candidatePassword'),
 
     // Quiz
     examCode: document.getElementById('examCode'),
@@ -514,7 +513,7 @@ const elements = {
     resultIcon: document.getElementById('resultIcon'),
     resultTitle: document.getElementById('resultTitle'),
     resultName: document.getElementById('resultName'),
-    resultBirthDate: document.getElementById('resultBirthDate'),
+    resultAttempt: document.getElementById('resultAttempt'),
     resultDepartment: document.getElementById('resultDepartment'),
     resultDate: document.getElementById('resultDate'),
     resultDuration: document.getElementById('resultDuration'),
@@ -534,7 +533,6 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     populateCandidateDropdown();
     setupEventListeners();
-    setupDateInputEvents();
     setupBeforeUnloadWarning();
     setupElectronGuards();
 
@@ -677,70 +675,32 @@ function populateCandidateDropdown() {
 
 function onNameSelected() {
     const select = document.getElementById('fullName');
-    const dateInput = document.getElementById('birthDate');
-    const yearDisplay = document.getElementById('birthYearDisplay');
+    const passwordInput = document.getElementById('candidatePassword');
 
     const selectedName = select.value;
 
     if (!selectedName) {
-        dateInput.value = '';
-        if (yearDisplay) {
-            yearDisplay.textContent = '';
-            yearDisplay.classList.remove('has-year');
-            yearDisplay.classList.add('hidden');
-        }
+        if (passwordInput) passwordInput.value = '';
         return;
     }
 
-    // Find candidate and set year
-    const candidate = CANDIDATES_LIST.find(c => c.name === selectedName);
-    if (candidate && candidate.birthDate) {
-        // birthDate format: dd/mm/yyyy
-        const parts = candidate.birthDate.split('/');
-        if (parts.length === 3) {
-            const year = parts[2];
-            const month = parts[1];
-            const day = parts[0];
-
-            // Set date picker to candidate's year range
-            dateInput.min = `${year}-01-01`;
-            dateInput.max = `${year}-12-31`;
-
-            // Show year (only visible when date input is focused)
-            if (yearDisplay) {
-                yearDisplay.textContent = `Năm sinh: ${year}`;
-                yearDisplay.classList.add('has-year');
-            }
-        }
-    }
-}
-
-// Setup focus/blur events for date input to show/hide year display
-function setupDateInputEvents() {
-    const dateInput = document.getElementById('birthDate');
-    const yearDisplay = document.getElementById('birthYearDisplay');
-
-    if (!dateInput || !yearDisplay) return;
-
-    // Show year display when clicking/focusing on date input
-    dateInput.addEventListener('focus', () => {
-        if (yearDisplay.classList.contains('has-year')) {
-            yearDisplay.classList.remove('hidden');
-        }
-    });
-
-    // Hide year display when clicking outside
-    dateInput.addEventListener('blur', () => {
-        // Delay to allow any click on yearDisplay to register
-        setTimeout(() => {
-            yearDisplay.classList.add('hidden');
-        }, 200);
-    });
+    // Clear password when switching candidates
+    if (passwordInput) passwordInput.value = '';
 }
 
 function setupEventListeners() {
     // Login form
     elements.loginForm.addEventListener('submit', handleLogin);
+
+    // Toggle password visibility
+    const togglePasswordBtn = document.getElementById('toggleCandidatePassword');
+    if (togglePasswordBtn && elements.passwordInput) {
+        togglePasswordBtn.addEventListener('click', () => {
+            const type = elements.passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            elements.passwordInput.setAttribute('type', type);
+            togglePasswordBtn.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+        });
+    }
 
     // Navigation
     elements.btnPrev.addEventListener('click', () => navigateQuestion(-1));
@@ -769,7 +729,7 @@ function handleLogin(e) {
     e.preventDefault();
 
     const fullName = elements.fullNameInput.value;
-    const birthDateValue = elements.birthDateInput.value; // yyyy-mm-dd format from date picker
+    const passwordValue = elements.passwordInput.value.trim();
     const errorDiv = document.getElementById('loginError');
 
     // Hide previous error
@@ -780,18 +740,14 @@ function handleLogin(e) {
         return;
     }
 
-    if (!birthDateValue) {
-        showLoginError('Vui lòng chọn ngày sinh!');
+    if (!passwordValue) {
+        showLoginError('Vui lòng nhập mật khẩu!');
         return;
     }
 
-    // Convert date picker value (yyyy-mm-dd) to dd/mm/yyyy
-    const dateParts = birthDateValue.split('-');
-    const birthDateFormatted = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-
     // Validate against candidate list
     if (typeof validateCandidate === 'function') {
-        const result = validateCandidate(fullName, birthDateFormatted);
+        const result = validateCandidate(fullName, passwordValue);
         if (!result.valid) {
             showLoginError(result.error);
             return;
@@ -800,10 +756,10 @@ function handleLogin(e) {
     }
 
     state.user.fullName = fullName;
-    state.user.birthDate = birthDateFormatted;
+    state.user.password = passwordValue;
 
     // Increment and store attempt number
-    state.user.attemptNumber = incrementAttemptCount(fullName, birthDateFormatted);
+    state.user.attemptNumber = incrementAttemptCount(fullName, passwordValue);
 
     startQuiz();
 }
@@ -811,8 +767,8 @@ function handleLogin(e) {
 function showLoginError(message) {
     const errorDiv = document.getElementById('loginError');
     if (errorDiv) {
-        errorDiv.textContent = '❌ ' + message;
-        errorDiv.style.display = 'block';
+        errorDiv.innerHTML = '<span style="font-size: 18px; font-weight: bold;">✖</span> ' + message;
+        errorDiv.style.display = 'flex';
     } else {
         alert(message);
     }
@@ -1165,7 +1121,7 @@ async function calculateAndShowResult(timeUp = false) {
 
     // Update result screen
     elements.resultName.textContent = state.user.fullName;
-    elements.resultBirthDate.textContent = formatDateDisplay(state.user.birthDate);
+    elements.resultAttempt.textContent = `Lần ${state.user.attemptNumber}`;
     elements.resultDepartment.textContent = state.user.department;
     elements.resultDate.textContent = formatDateTime(state.startTime);
     elements.resultDuration.textContent = calculateDuration();
@@ -1385,11 +1341,7 @@ async function _generatePDFDoc(footerNote) {
                     </tr>
                     <tr>
                         <td style="padding:4px 0;"><strong>Chữ ký thí sinh:</strong></td>
-                        <td colspan="3" style="padding:4px 0;border-bottom:1px dotted #999;min-height:30px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:4px 0;"><strong>Ngày sinh:</strong></td>
-                        <td style="padding:4px 0;">${formatDateDisplay(state.user.birthDate)}</td>
+                        <td style="padding:4px 0;border-bottom:1px dotted #999;min-height:30px;"></td>
                         <td style="padding:4px 0;"><strong>Ngày thi:</strong></td>
                         <td style="padding:4px 0;">${formatDateTime(state.startTime)}</td>
                     </tr>
@@ -1846,12 +1798,12 @@ function getDeviceId() {
     return newId;
 }
 
-function getHistoryStorageKey(fullName, birthDate) {
+function getHistoryStorageKey(fullName, password) {
     const deviceId = getDeviceId();
     const nameKey = normalizeKeyPart(fullName);
-    const birthKey = normalizeKeyPart(birthDate);
-    if (nameKey && birthKey) {
-        return `${EXAM_HISTORY_KEY}::${deviceId}::${nameKey}::${birthKey}`;
+    const passKey = normalizeKeyPart(password);
+    if (nameKey && passKey) {
+        return `${EXAM_HISTORY_KEY}::${deviceId}::${nameKey}::${passKey}`;
     }
     return `${EXAM_HISTORY_KEY}::${deviceId}`;
 }
