@@ -118,7 +118,14 @@ function getExamHistoryByUser(fullName, password) {
 }
 
 function clearExamHistory() {
-    localStorage.removeItem(EXAM_HISTORY_KEY);
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key === EXAM_HISTORY_KEY || (key && key.startsWith(EXAM_HISTORY_KEY + '::'))) {
+            keysToRemove.push(key);
+        }
+    }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
     console.log('🗑️ Đã xóa toàn bộ lịch sử thi');
 }
 
@@ -573,33 +580,52 @@ async function checkForExistingSession() {
 }
 
 function showSessionRecoveryDialog(session) {
+    if (document.getElementById('sessionRecoveryModal')) return;
+
     const minutesLeft = Math.floor(session.timerRemaining / 60);
     const answeredCount = Object.keys(session.answers).length;
+    const safeFullName = String(session?.user?.fullName || '');
+    const text = {
+        title: 'Ph\u00E1t hi\u1EC7n b\u00E0i thi ch\u01B0a ho\u00E0n th\u00E0nh!',
+        candidate: 'Th\u00ED sinh:',
+        answered: '\u0110\u00E3 l\u00E0m:',
+        remaining: 'C\u00F2n l\u1EA1i:',
+        unit: 'c\u00E2u',
+        minute: 'ph\u00FAt',
+        question: 'B\u1EA1n c\u00F3 mu\u1ED1n ti\u1EBFp t\u1EE5c b\u00E0i thi n\u00E0y kh\u00F4ng?',
+        discard: 'B\u1EAFt \u0111\u1EA7u m\u1EDBi',
+        resume: 'Ti\u1EBFp t\u1EE5c l\u00E0m b\u00E0i',
+    };
 
-    const dialogHTML = `
-        <div id="sessionRecoveryModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;">
-            <div style="background:white;padding:35px;border-radius:15px;max-width:450px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
-                <div style="font-size:50px;margin-bottom:15px;">⚠️</div>
-                <h2 style="color:#333;margin-bottom:15px;font-size:22px;">Phát hiện bài thi chưa hoàn thành!</h2>
-                <div style="background:#f5f5f5;padding:15px;border-radius:10px;margin-bottom:20px;text-align:left;">
-                    <p style="margin:5px 0;color:#666;"><strong>👤 Thí sinh:</strong> ${session.user.fullName}</p>
-                    <p style="margin:5px 0;color:#666;"><strong>📝 Đã làm:</strong> ${answeredCount}/${session.questions.length} câu</p>
-                    <p style="margin:5px 0;color:#666;"><strong>⏱️ Còn lại:</strong> ${minutesLeft} phút</p>
-                </div>
-                <p style="color:#666;font-size:14px;margin-bottom:25px;">Bạn có muốn tiếp tục bài thi này không?</p>
-                <div style="display:flex;gap:15px;">
-                    <button onclick="discardSession()" style="flex:1;padding:15px;border:2px solid #ddd;background:white;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:#666;">
-                        🗑️ Bắt đầu mới
-                    </button>
-                    <button onclick="continueSession()" style="flex:1;padding:15px;border:none;background:#4CAF50;color:white;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;">
-                        ✅ Tiếp tục làm bài
-                    </button>
-                </div>
+    const modal = document.createElement('div');
+    modal.id = 'sessionRecoveryModal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;';
+
+    modal.innerHTML = `
+        <div style="background:white;padding:35px;border-radius:15px;max-width:450px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+            <div style="font-size:50px;margin-bottom:15px;">&#9888;</div>
+            <h2 style="color:#333;margin-bottom:15px;font-size:22px;">${text.title}</h2>
+            <div style="background:#f5f5f5;padding:15px;border-radius:10px;margin-bottom:20px;text-align:left;">
+                <p style="margin:5px 0;color:#666;"><strong>${text.candidate}</strong> <span data-session-field="fullName"></span></p>
+                <p style="margin:5px 0;color:#666;"><strong>${text.answered}</strong> ${answeredCount}/${session.questions.length} ${text.unit}</p>
+                <p style="margin:5px 0;color:#666;"><strong>${text.remaining}</strong> ${minutesLeft} ${text.minute}</p>
+            </div>
+            <p style="color:#666;font-size:14px;margin-bottom:25px;">${text.question}</p>
+            <div style="display:flex;gap:15px;">
+                <button data-session-action="discard" style="flex:1;padding:15px;border:2px solid #ddd;background:white;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:#666;">
+                    ${text.discard}
+                </button>
+                <button data-session-action="continue" style="flex:1;padding:15px;border:none;background:#4CAF50;color:white;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;">
+                    ${text.resume}
+                </button>
             </div>
         </div>
     `;
 
-    document.body.insertAdjacentHTML('beforeend', dialogHTML);
+    modal.querySelector('[data-session-field="fullName"]').textContent = safeFullName;
+    modal.querySelector('[data-session-action="discard"]').addEventListener('click', discardSession);
+    modal.querySelector('[data-session-action="continue"]').addEventListener('click', continueSession);
+    document.body.appendChild(modal);
 }
 
 function continueSession() {
@@ -706,6 +732,9 @@ function setupEventListeners() {
     elements.btnPrev.addEventListener('click', () => navigateQuestion(-1));
     elements.btnNext.addEventListener('click', () => navigateQuestion(1));
     elements.btnFinish.addEventListener('click', handleFinish);
+    elements.questionContainer.addEventListener('click', handleQuestionContainerClick);
+    elements.questionContainer.addEventListener('change', handleQuestionContainerChange);
+    elements.questionGrid.addEventListener('click', handleQuestionGridClick);
 
     // Result actions
     elements.btnExportPDF.addEventListener('click', exportToPDF);
@@ -722,6 +751,47 @@ function setupEventListeners() {
         e.preventDefault();
         exportToPDF();
     });
+}
+
+function handleQuestionContainerClick(event) {
+    const flagButton = event.target.closest('[data-action="toggle-flag"]');
+    if (flagButton) {
+        const questionId = Number(flagButton.dataset.questionId);
+        if (!Number.isNaN(questionId)) {
+            toggleFlag(questionId);
+        }
+        return;
+    }
+
+    const optionItem = event.target.closest('[data-action="select-option"]');
+    if (optionItem) {
+        const questionId = Number(optionItem.dataset.questionId);
+        const optionIndex = Number(optionItem.dataset.optionIndex);
+        if (!Number.isNaN(questionId) && !Number.isNaN(optionIndex)) {
+            selectOption(questionId, optionIndex);
+        }
+    }
+}
+
+function handleQuestionContainerChange(event) {
+    const optionInput = event.target.closest('input[data-action="select-option-input"]');
+    if (!optionInput) return;
+
+    const questionId = Number(optionInput.dataset.questionId);
+    const optionIndex = Number(optionInput.dataset.optionIndex);
+    if (!Number.isNaN(questionId) && !Number.isNaN(optionIndex)) {
+        selectOption(questionId, optionIndex);
+    }
+}
+
+function handleQuestionGridClick(event) {
+    const gridItem = event.target.closest('[data-action="go-to-question"]');
+    if (!gridItem) return;
+
+    const questionIndex = Number(gridItem.dataset.questionIndex);
+    if (!Number.isNaN(questionIndex)) {
+        goToQuestion(questionIndex);
+    }
 }
 
 // ===== Login =====
@@ -837,7 +907,9 @@ function renderQuestion() {
             <div class="question-header">
                 <span class="question-number">Câu ${state.currentIndex + 1}:</span>
                 <button class="flag-btn ${isFlagged ? 'active' : ''}" 
-                        onclick="toggleFlag(${question.id})" 
+                        type="button"
+                        data-action="toggle-flag"
+                        data-question-id="${question.id}"
                         title="Đánh dấu câu hỏi">
                     ⚑
                 </button>
@@ -847,10 +919,15 @@ function renderQuestion() {
                 <div class="options-list">
                     ${question.options.map((option, idx) => `
                         <label class="option-item ${selectedAnswer === idx ? 'selected' : ''}" 
-                               onclick="selectOption(${question.id}, ${idx})">
+                               data-action="select-option"
+                               data-question-id="${question.id}"
+                               data-option-index="${idx}">
                             <input type="radio" 
                                    name="question_${question.id}" 
                                    value="${idx}"
+                                   data-action="select-option-input"
+                                   data-question-id="${question.id}"
+                                   data-option-index="${idx}"
                                    ${selectedAnswer === idx ? 'checked' : ''}>
                             <span class="option-radio"></span>
                             <span class="option-label">${optionLabels[idx]}.</span>
@@ -942,7 +1019,8 @@ function renderQuestionGrid() {
 
             html += `
                 <div class="grid-item ${statusClass}" 
-                     onclick="goToQuestion(${index})"
+                     data-action="go-to-question"
+                     data-question-index="${index}"
                      title="Câu ${index + 1} - ${categoryNames[cat] || cat}">
                     ${index + 1}
                 </div>
@@ -1704,26 +1782,27 @@ function handleRetry() {
 
 // ===== Confirmation Modal =====
 function showConfirmModal(icon, title, message, onConfirm) {
-    // Create modal HTML
-    const modalHTML = `
-        <div class="modal-overlay active" id="confirmModal">
-            <div class="modal-content">
-                <div class="modal-icon">${icon}</div>
-                <h2 class="modal-title">${title}</h2>
-                <p class="modal-text">${message}</p>
-                <div class="modal-buttons">
-                    <button class="modal-btn cancel" onclick="closeModal()">Hủy</button>
-                    <button class="modal-btn confirm" onclick="confirmAction()">Xác nhận</button>
-                </div>
+    closeModal();
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.id = 'confirmModal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-icon">${icon}</div>
+            <h2 class="modal-title">${title}</h2>
+            <p class="modal-text">${message}</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" type="button" data-confirm-action="cancel">Hủy</button>
+                <button class="modal-btn confirm" type="button" data-confirm-action="confirm">Xác nhận</button>
             </div>
         </div>
     `;
 
-    // Add to body
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-    // Store callback
     window.confirmCallback = onConfirm;
+    modal.querySelector('[data-confirm-action="cancel"]').addEventListener('click', closeModal);
+    modal.querySelector('[data-confirm-action="confirm"]').addEventListener('click', confirmAction);
+    document.body.appendChild(modal);
 }
 
 function closeModal() {
@@ -1751,40 +1830,6 @@ window.continueSession = continueSession;
 window.discardSession = discardSession;
 
 
-// ===== Auto Resume Session =====
-function checkAndPromptResume() {
-    const session = loadSession();
-    if (session) {
-        const savedTime = session.savedAt ? new Date(session.savedAt).toLocaleString('vi-VN') : 'KhÃ´ng rÃµ';
-
-        const modalHTML = `
-            <div class="modal-overlay active" id="sessionRecoveryModal" style="z-index: 9999;">
-                <div class="modal-content">
-                    <div class="modal-icon">âš ï¸</div>
-                    <h2 class="modal-title">PhÃ¡t hiá»‡n bÃ i thi chÆ°a hoÃ n táº¥t</h2>
-                    <p class="modal-text">
-                        Há»‡ thá»‘ng Ä‘Ã£ lÆ°u bÃ i thi cá»§a báº¡n lÃºc <b>${savedTime}</b>.<br>
-                        Báº¡n cÃ³ muá»‘n tiáº¿p tá»¥c lÃ m bÃ i khÃ´ng?
-                    </p>
-                    <div class="modal-buttons">
-                        <button class="modal-btn cancel" onclick="discardSession()">Bá» qua (LÃ m má»›i)</button>
-                        <button class="modal-btn confirm" onclick="continueSession()">Tiáº¿p tá»¥c lÃ m bÃ i</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }
-}
-
-// Initialize Resume Logic
-document.addEventListener('DOMContentLoaded', () => {
-    // Chá»‰ kiá»ƒm tra khi Ä‘ang á»Ÿ mÃ n hÃ¬nh login (trang chá»§)
-    const loginScreen = document.getElementById('loginScreen');
-    if (loginScreen && getComputedStyle(loginScreen).display !== 'none') {
-        setTimeout(checkAndPromptResume, 500); // Äá»£i 500ms Ä‘á»ƒ cháº¯c cháº¯n UI Ä‘Ã£ load
-    }
-});
 function normalizeKeyPart(value) {
     const cleaned = String(value || '').trim().toLowerCase();
     return encodeURIComponent(cleaned).replace(/%20/g, '-');

@@ -416,7 +416,7 @@
             </div>
 
             <input type="password" id="passwordInput" placeholder="Nhập mật khẩu..." autofocus>
-            <button class="btn-login" onclick="verifyPassword()">🔓 Đăng Nhập</button>
+            <button class="btn-login" id="btnHistoryLogin" onclick="verifyPassword()">🔓 Đăng Nhập</button>
 
             <a href="index.html" class="back-link">← Quay về trang chủ</a>
         </div>
@@ -482,6 +482,9 @@
     <script>
         // ===== Password =====
         const HISTORY_PASSWORD = 'DAHC@6789'; // Cùng mật khẩu với Admin
+        const ADMIN_AUTH_SESSION_KEY = 'quiz_admin_authenticated';
+        const HISTORY_AUTH_ATTEMPTS_SESSION_KEY = 'quiz_history_auth_attempts';
+        const MAX_HISTORY_PASSWORD_ATTEMPTS = 3;
 
         // ===== Backup Function =====
         async function backupDataToRoot() {
@@ -519,23 +522,106 @@
         const PDF_DB_VERSION = 1;
         const PDF_STORE_NAME = 'pdfs';
 
+        function isAdminAuthenticated() {
+            try {
+                return sessionStorage.getItem(ADMIN_AUTH_SESSION_KEY) === 'true';
+            } catch (error) {
+                console.warn('Unable to read admin auth session:', error);
+                return false;
+            }
+        }
+
+        function setAdminAuthenticated(value) {
+            try {
+                if (value) {
+                    sessionStorage.setItem(ADMIN_AUTH_SESSION_KEY, 'true');
+                } else {
+                    sessionStorage.removeItem(ADMIN_AUTH_SESSION_KEY);
+                }
+            } catch (error) {
+                console.warn('Unable to update admin auth session:', error);
+            }
+        }
+
+        function getHistoryAuthAttempts() {
+            try {
+                return parseInt(sessionStorage.getItem(HISTORY_AUTH_ATTEMPTS_SESSION_KEY) || '0', 10);
+            } catch (error) {
+                console.warn('Unable to read history auth attempts:', error);
+                return 0;
+            }
+        }
+
+        function setHistoryAuthAttempts(value) {
+            try {
+                sessionStorage.setItem(HISTORY_AUTH_ATTEMPTS_SESSION_KEY, String(Math.max(0, value)));
+            } catch (error) {
+                console.warn('Unable to update history auth attempts:', error);
+            }
+        }
+
+        function resetHistoryAuthAttempts() {
+            setHistoryAuthAttempts(0);
+        }
+
+        function getRemainingHistoryAttempts() {
+            return Math.max(0, MAX_HISTORY_PASSWORD_ATTEMPTS - getHistoryAuthAttempts());
+        }
+
+        function updateHistoryLoginControls() {
+            const passwordInput = document.getElementById('passwordInput');
+            const loginButton = document.getElementById('btnHistoryLogin');
+            const isLocked = !isAdminAuthenticated() && getRemainingHistoryAttempts() <= 0;
+
+            if (passwordInput) {
+                passwordInput.disabled = isLocked;
+            }
+            if (loginButton) {
+                loginButton.disabled = isLocked;
+            }
+        }
+
+        function unlockHistoryPage() {
+            resetHistoryAuthAttempts();
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('mainContent').style.display = 'block';
+            loadPDFCache();
+        }
+
         // ===== Password Verification =====
         function verifyPassword() {
             const password = document.getElementById('passwordInput').value;
             const errorMessage = document.getElementById('errorMessage');
 
-            if (password === HISTORY_PASSWORD) {
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('mainContent').style.display = 'block';
-                loadPDFCache();
-            } else {
+            if (getRemainingHistoryAttempts() <= 0) {
+                updateHistoryLoginControls();
+                errorMessage.textContent = '❌ Bạn đã nhập sai quá 3 lần.';
                 errorMessage.classList.add('show');
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('passwordInput').focus();
+                return;
+            }
 
-                setTimeout(() => {
-                    errorMessage.classList.remove('show');
-                }, 3000);
+            if (password === HISTORY_PASSWORD) {
+                setAdminAuthenticated(true);
+                unlockHistoryPage();
+            } else {
+                const nextAttempts = getHistoryAuthAttempts() + 1;
+                setHistoryAuthAttempts(nextAttempts);
+                const remaining = getRemainingHistoryAttempts();
+                errorMessage.classList.add('show');
+                errorMessage.textContent = remaining > 0
+                    ? `❌ Mật khẩu không đúng! Còn ${remaining} lần thử.`
+                    : '❌ Bạn đã nhập sai quá 3 lần.';
+                document.getElementById('passwordInput').value = '';
+                updateHistoryLoginControls();
+                if (!document.getElementById('passwordInput').disabled) {
+                    document.getElementById('passwordInput').focus();
+                }
+
+                if (remaining > 0) {
+                    setTimeout(() => {
+                        errorMessage.classList.remove('show');
+                    }, 3000);
+                }
             }
         }
 
@@ -545,6 +631,12 @@
                 verifyPassword();
             }
         });
+
+        if (isAdminAuthenticated()) {
+            unlockHistoryPage();
+        } else {
+            updateHistoryLoginControls();
+        }
 
         // ===== Tab Navigation =====
         function showSection(sectionId, evt) {
@@ -750,10 +842,72 @@
         }
 
         // ===== Exam History Functions =====
+        function getAllHistoryStorageKeys() {
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key === EXAM_HISTORY_KEY || (key && key.startsWith(EXAM_HISTORY_KEY + '::'))) {
+                    keys.push(key);
+                }
+            }
+            return keys;
+        }
+
+        function parseHistoryList(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                console.error('Error reading history key:', key, error);
+                return [];
+            }
+        }
+
+        function getHistoryRecordId(item) {
+            if (item && item.id !== undefined && item.id !== null) {
+                return `id:${item.id}`;
+            }
+
+            return JSON.stringify([
+                item?.user?.fullName || '',
+                item?.user?.department || '',
+                item?.user?.attemptNumber || '',
+                item?.exam?.startTime || '',
+                item?.savedAt || '',
+                item?.result?.score || ''
+            ]);
+        }
+
         function getExamHistory() {
             try {
-                const historyJson = localStorage.getItem(EXAM_HISTORY_KEY);
-                return historyJson ? JSON.parse(historyJson) : [];
+                const records = new Map();
+
+                getAllHistoryStorageKeys().forEach((key) => {
+                    parseHistoryList(key).forEach((item, indexInKey) => {
+                        const recordId = getHistoryRecordId(item);
+                        const source = { key, indexInKey };
+                        const existing = records.get(recordId);
+
+                        if (existing) {
+                            existing.__sources.push(source);
+                            return;
+                        }
+
+                        records.set(recordId, {
+                            ...item,
+                            __recordId: recordId,
+                            __sources: [source]
+                        });
+                    });
+                });
+
+                return Array.from(records.values()).sort((a, b) => {
+                    const timeA = a.savedAt || a.exam?.endTime || a.exam?.startTime || '';
+                    const timeB = b.savedAt || b.exam?.endTime || b.exam?.startTime || '';
+                    return timeB.localeCompare(timeA);
+                });
             } catch (error) {
                 console.error('Error reading exam history:', error);
                 return [];
@@ -864,15 +1018,39 @@ ${item.exam?.timeUp ? '⚠️ Hết giờ: Có' : ''}
             if (!confirm('Bạn có chắc muốn xóa lịch sử này?')) return;
 
             const history = getExamHistory();
-            history.splice(index, 1);
-            localStorage.setItem(EXAM_HISTORY_KEY, JSON.stringify(history));
+            const target = history[index];
+            if (!target) return;
+
+            const sourcesByKey = new Map();
+            (target.__sources || []).forEach((source) => {
+                if (!sourcesByKey.has(source.key)) {
+                    sourcesByKey.set(source.key, []);
+                }
+                sourcesByKey.get(source.key).push(source.indexInKey);
+            });
+
+            sourcesByKey.forEach((indices, key) => {
+                const items = parseHistoryList(key);
+                indices.sort((a, b) => b - a).forEach((itemIndex) => {
+                    if (itemIndex >= 0 && itemIndex < items.length) {
+                        items.splice(itemIndex, 1);
+                    }
+                });
+
+                if (items.length > 0) {
+                    localStorage.setItem(key, JSON.stringify(items));
+                } else {
+                    localStorage.removeItem(key);
+                }
+            });
+
             loadExamHistory();
         }
 
         function clearAllHistory() {
             if (!confirm('Bạn có chắc muốn xóa TẤT CẢ lịch sử thi?')) return;
 
-            localStorage.removeItem(EXAM_HISTORY_KEY);
+            getAllHistoryStorageKeys().forEach((key) => localStorage.removeItem(key));
             loadExamHistory();
             alert('✅ Đã xóa tất cả lịch sử thi!');
         }

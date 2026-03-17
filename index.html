@@ -21,14 +21,13 @@
     <div id="loginScreen" class="screen active">
         <div class="login-container">
             <!-- Admin Settings Button -->
-            <button class="btn-admin-settings" id="btnAdminSettings" title="Cài đặt quản trị">
-                ⚙️
+            <button class="btn-admin-settings corner-action-button" id="btnAdminSettings" title="Cài đặt quản trị">
+                <span class="corner-action-icon">⚙️</span>
             </button>
 
             <!-- History Button -->
-            <a href="history.html" class="btn-history" title="Xem lịch sử thi & PDF cache"
-                style="position:absolute;top:15px;right:60px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.3s;">
-                📂
+            <a href="history.html" class="btn-history corner-action-button" title="Xem lịch sử thi & PDF cache">
+                <span class="corner-action-icon">📂</span>
             </a>
 
             <div class="login-header">
@@ -140,7 +139,7 @@
                             <span class="import-icon">👥</span>
                             <div>
                                 <strong>Danh sách thí sinh</strong>
-                                <small>Nạp từ file Excel (cột: Họ tên, Mật khẩu, Đơn vị)</small>
+                                <small>Nạp từ file Excel (cột: Họ tên + Mật khẩu hoặc Đơn vị + STT)</small>
                             </div>
                         </div>
                         <button class="btn-import" id="btnImportCandidates"

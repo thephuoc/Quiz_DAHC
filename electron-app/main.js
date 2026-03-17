@@ -1,16 +1,30 @@
 ﻿const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { URL, fileURLToPath } = require('url');
 const XLSX = require('xlsx');
 
 const userDataPath = app.getPath('userData');
-const appPath = app.getAppPath(); // Đường dẫn app để lưu backup
 
 const backupDir = path.join(userDataPath, 'backup');
 const runtimeStateFile = path.join(userDataPath, 'runtime-state.json');
 
-// Thư mục chính: C:\Documents\Quiz_DAHC (đường dẫn cố định)
-const storageRootDir = path.join('C:', 'Documents', 'Quiz_DAHC');
+const rendererRootDir = path.join(__dirname, 'app');
+const legacyStorageRootDir = path.join('C:', 'Documents', 'Quiz_DAHC');
+
+function resolveStorageRootDir() {
+    try {
+        if (fs.existsSync(legacyStorageRootDir)) {
+            return legacyStorageRootDir;
+        }
+    } catch (error) {
+        console.error('Failed to check legacy storage path:', error);
+    }
+
+    return path.join(app.getPath('documents'), 'Quiz_DAHC');
+}
+
+const storageRootDir = resolveStorageRootDir();
 const resultsDir = path.join(storageRootDir, 'results');
 // pdf_primary removed — chỉ dùng pdf_backup
 const reportsDir = path.join(storageRootDir, 'reports');
@@ -27,6 +41,16 @@ if (app.isPackaged) {
 
 const pdfBackupDir = path.join(backupRootDir, 'pdf_backup');
 const resultsBackupDir = path.join(backupRootDir, 'results_backup');
+const allowedBackupKeys = new Set(['exam_history', 'exam_session']);
+const allowedFolderRoots = [
+    userDataPath,
+    storageRootDir,
+    resultsDir,
+    reportsDir,
+    backupRootDir,
+    pdfBackupDir,
+    resultsBackupDir,
+].map((dirPath) => path.resolve(dirPath));
 
 // Logging helper for debugging startup crashes
 const logFile = path.join(userDataPath, 'app_debug.log');
@@ -38,6 +62,11 @@ process.on('uncaughtException', (error) => {
     logError(error.stack);
     dialog.showErrorBox('Application Error', `A critical error occurred:\n${error.message}\n\nPlease check log at: ${logFile}`);
     process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+    const message = reason instanceof Error ? reason.stack || reason.message : String(reason);
+    logError(`Unhandled rejection: ${message}`);
 });
 
 const resultsIndexFile = path.join(resultsDir, 'results-index.json');
@@ -90,6 +119,43 @@ function loadRuntimeState() {
 function persistRuntimeState() {
     runtimeState.lastSavedAt = new Date().toISOString();
     writeJsonSafe(runtimeStateFile, runtimeState);
+}
+
+function isPathInside(targetPath, basePath) {
+    const relative = path.relative(basePath, targetPath);
+    return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function isAllowedFolderPath(folderPath) {
+    const resolved = path.resolve(folderPath);
+    return allowedFolderRoots.some((rootPath) => isPathInside(resolved, rootPath));
+}
+
+function normalizeBackupKey(key) {
+    if (typeof key !== 'string') return null;
+    const normalized = key.trim();
+    if (!allowedBackupKeys.has(normalized)) return null;
+    return normalized;
+}
+
+function isSafeExternalUrl(rawUrl) {
+    try {
+        const parsed = new URL(rawUrl);
+        return parsed.protocol === 'https:' || parsed.protocol === 'http:';
+    } catch (error) {
+        return false;
+    }
+}
+
+function isSafeRendererNavigation(rawUrl) {
+    try {
+        const parsed = new URL(rawUrl);
+        if (parsed.protocol !== 'file:') return false;
+        const targetPath = path.resolve(fileURLToPath(parsed));
+        return isPathInside(targetPath, path.resolve(rendererRootDir));
+    } catch (error) {
+        return false;
+    }
 }
 
 function sanitizeForFileName(input) {
@@ -254,7 +320,8 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
-            sandbox: false,
+            sandbox: true,
+            webSecurity: true,
             spellcheck: false,
         },
         autoHideMenuBar: true,
@@ -269,6 +336,9 @@ function createWindow() {
 
     mainWindow.loadFile(path.join(__dirname, 'app', 'index.html'));
     Menu.setApplicationMenu(null);
+    mainWindow.webContents.session.setPermissionRequestHandler((_webContents, _permission, callback) => {
+        callback(false);
+    });
 
     if (app.isPackaged) {
         mainWindow.webContents.on('devtools-opened', () => {
@@ -287,8 +357,28 @@ function createWindow() {
     }
 
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        shell.openExternal(url);
+        if (isSafeExternalUrl(url)) {
+            void shell.openExternal(url);
+        } else {
+            logError(`Blocked external URL: ${url}`);
+        }
         return { action: 'deny' };
+    });
+
+    mainWindow.webContents.on('will-attach-webview', (event) => {
+        event.preventDefault();
+        logError('Blocked unexpected webview attachment.');
+    });
+
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        if (!isSafeRendererNavigation(url)) {
+            event.preventDefault();
+            logError(`Blocked navigation outside renderer root: ${url}`);
+        }
+    });
+
+    mainWindow.webContents.on('render-process-gone', (_event, details) => {
+        logError(`Renderer process gone: ${details.reason}`);
     });
 
     mainWindow.on('close', (event) => {
@@ -302,6 +392,10 @@ function createWindow() {
 
     mainWindow.on('closed', () => {
         mainWindow = null;
+    });
+
+    mainWindow.on('unresponsive', () => {
+        logError('Main window became unresponsive.');
     });
 }
 
@@ -429,14 +523,17 @@ ipcMain.handle('get-storage-paths', () => ({
 
 ipcMain.handle('get-security-config', () => ({
     success: true,
-    adminPassword: process.env.QUIZ_ADMIN_PASSWORD || null,
+    hasAdminPassword: Boolean(process.env.QUIZ_ADMIN_PASSWORD),
 }));
 
 ipcMain.handle('open-pdf-folder', async () => {
     try {
         ensureDirectories();
-        await shell.openPath(pdfBackupDir);
-        return { success: true };
+        const openResult = await shell.openPath(pdfBackupDir);
+        if (openResult) {
+            return { success: false, error: openResult };
+        }
+        return { success: true, path: pdfBackupDir };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -448,13 +545,20 @@ ipcMain.handle('open-folder', async (event, folderPath) => {
             return { success: false, error: 'Invalid folder path' };
         }
 
-        if (!fs.existsSync(folderPath)) {
-            // Tạo thư mục nếu chưa tồn tại
-            fs.mkdirSync(folderPath, { recursive: true });
+        const resolvedFolderPath = path.resolve(folderPath);
+        if (!isAllowedFolderPath(resolvedFolderPath)) {
+            return { success: false, error: 'Blocked folder path' };
         }
 
-        shell.openPath(folderPath);
-        return { success: true };
+        if (!fs.existsSync(resolvedFolderPath)) {
+            fs.mkdirSync(resolvedFolderPath, { recursive: true });
+        }
+
+        const openResult = await shell.openPath(resolvedFolderPath);
+        if (openResult) {
+            return { success: false, error: openResult };
+        }
+        return { success: true, path: resolvedFolderPath };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -463,7 +567,11 @@ ipcMain.handle('open-folder', async (event, folderPath) => {
 ipcMain.handle('backup-data', async (event, key, data) => {
     try {
         ensureDirectories();
-        const filePath = path.join(backupDir, `${key}.json`);
+        const safeKey = normalizeBackupKey(key);
+        if (!safeKey) {
+            return { success: false, error: 'Invalid backup key' };
+        }
+        const filePath = path.join(backupDir, `${safeKey}.json`);
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
         return { success: true, filePath };
     } catch (error) {
@@ -473,7 +581,11 @@ ipcMain.handle('backup-data', async (event, key, data) => {
 
 ipcMain.handle('restore-data', async (event, key) => {
     try {
-        const filePath = path.join(backupDir, `${key}.json`);
+        const safeKey = normalizeBackupKey(key);
+        if (!safeKey) {
+            return { success: false, error: 'Invalid backup key' };
+        }
+        const filePath = path.join(backupDir, `${safeKey}.json`);
         if (fs.existsSync(filePath)) {
             const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
             return { success: true, data };
@@ -583,8 +695,10 @@ ipcMain.handle('backup-data-to-root', async () => {
         const targetResultsDir = path.join(targetDir, 'results_backup');
         copyDirRecursive(resultsDir, targetResultsDir);
 
-        // Mở thư mục đích để user thấy
-        await shell.openPath(targetDir);
+        const openResult = await shell.openPath(targetDir);
+        if (openResult) {
+            return { success: false, error: openResult };
+        }
 
         return { success: true, path: targetDir };
     } catch (error) {
@@ -606,6 +720,45 @@ function getAppJsDir() {
 function cleanText(text) {
     if (text === null || text === undefined) return '';
     return String(text).trim();
+}
+
+function normalizeDepartmentCode(value) {
+    return cleanText(value)
+        .toUpperCase()
+        .replace(/\s+/g, '')
+        .replace(/[^A-Z0-9_-]/g, '');
+}
+
+function normalizeSerialValue(value) {
+    const raw = cleanText(value);
+    if (!raw || raw.toLowerCase() === 'nan') return '';
+
+    const numeric = Number(raw);
+    if (Number.isFinite(numeric)) {
+        return String(Math.trunc(numeric)).padStart(2, '0');
+    }
+
+    const digits = raw.replace(/\D+/g, '');
+    if (digits) {
+        return digits.padStart(2, '0');
+    }
+
+    return raw.toUpperCase().replace(/\s+/g, '');
+}
+
+function buildCandidatePassword(explicitPassword, unit, serial) {
+    const password = cleanText(explicitPassword);
+    if (password && password.toLowerCase() !== 'nan') {
+        return password;
+    }
+
+    const departmentCode = normalizeDepartmentCode(unit);
+    const serialValue = normalizeSerialValue(serial);
+    if (!departmentCode || !serialValue) {
+        return '';
+    }
+
+    return `${departmentCode}@${serialValue}`;
 }
 
 // --- Import Candidates ---
@@ -636,9 +789,10 @@ ipcMain.handle('import-candidates-excel', async () => {
         const nameIdx = header.findIndex(h => h.includes('ten') || h.includes('tên'));
         const passIdx = header.findIndex(h => h.includes('mat') || h.includes('mật') || h.includes('password') || h.includes('pass') || h.includes('pin'));
         const unitIdx = header.findIndex(h => h.includes('don') || h.includes('đơn') || h.includes('vi') || h.includes('vị'));
+        const sttIdx = header.findIndex(h => h.includes('stt') || h.includes('số thứ tự') || h.includes('so thu tu') || h.includes('serial'));
 
-        if (nameIdx < 0 || passIdx < 0) {
-            return { success: false, error: 'Khong tim thay cot "Ho ten" hoac "Mat khau" trong file Excel.' };
+        if (nameIdx < 0 || (passIdx < 0 && (unitIdx < 0 || sttIdx < 0))) {
+            return { success: false, error: 'Khong tim thay cot "Ho ten" va ("Mat khau" hoac cap "Don vi" + "STT") trong file Excel.' };
         }
 
         const candidates = [];
@@ -647,13 +801,13 @@ ipcMain.handle('import-candidates-excel', async () => {
             const name = cleanText(row[nameIdx]);
             if (!name || name === 'nan') continue;
 
-            const password = cleanText(row[passIdx]);
-
             const unit = unitIdx >= 0 ? cleanText(row[unitIdx]) : '';
+            const serial = sttIdx >= 0 ? row[sttIdx] : '';
+            const password = buildCandidatePassword(passIdx >= 0 ? row[passIdx] : '', unit, serial);
 
             candidates.push({
                 name,
-                password: (password && password !== 'nan') ? password : '',
+                password,
                 department: (unit && unit !== 'nan') ? unit : '',
             });
         }

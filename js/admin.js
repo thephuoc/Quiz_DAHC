@@ -5,6 +5,9 @@
 
 // ===== Quiz Settings =====
 const ADMIN_PASSWORD = 'DAHC@6789';
+const ADMIN_AUTH_SESSION_KEY = 'quiz_admin_authenticated';
+const ADMIN_AUTH_ATTEMPTS_SESSION_KEY = 'quiz_admin_auth_attempts';
+const MAX_ADMIN_PASSWORD_ATTEMPTS = 3;
 
 const defaultSettings = {
     categories: {
@@ -36,6 +39,65 @@ function saveSettingsToStorage(settings) {
 
 let quizSettings = loadSettings();
 
+function isAdminAuthenticated() {
+    try {
+        return sessionStorage.getItem(ADMIN_AUTH_SESSION_KEY) === 'true';
+    } catch (e) {
+        console.warn('Unable to read admin auth session:', e);
+        return false;
+    }
+}
+
+function setAdminAuthenticated(value) {
+    try {
+        if (value) {
+            sessionStorage.setItem(ADMIN_AUTH_SESSION_KEY, 'true');
+        } else {
+            sessionStorage.removeItem(ADMIN_AUTH_SESSION_KEY);
+        }
+    } catch (e) {
+        console.warn('Unable to update admin auth session:', e);
+    }
+}
+
+function getAdminAuthAttempts() {
+    try {
+        return parseInt(sessionStorage.getItem(ADMIN_AUTH_ATTEMPTS_SESSION_KEY) || '0', 10);
+    } catch (e) {
+        console.warn('Unable to read admin auth attempts:', e);
+        return 0;
+    }
+}
+
+function setAdminAuthAttempts(value) {
+    try {
+        sessionStorage.setItem(ADMIN_AUTH_ATTEMPTS_SESSION_KEY, String(Math.max(0, value)));
+    } catch (e) {
+        console.warn('Unable to update admin auth attempts:', e);
+    }
+}
+
+function resetAdminAuthAttempts() {
+    setAdminAuthAttempts(0);
+}
+
+function getRemainingAdminAttempts() {
+    return Math.max(0, MAX_ADMIN_PASSWORD_ATTEMPTS - getAdminAuthAttempts());
+}
+
+function updateAdminPasswordControls() {
+    const passwordInput = document.getElementById('adminPassword');
+    const verifyButton = document.getElementById('btnVerifyPassword');
+    const isLocked = !isAdminAuthenticated() && getRemainingAdminAttempts() <= 0;
+
+    if (passwordInput) {
+        passwordInput.disabled = isLocked;
+    }
+    if (verifyButton) {
+        verifyButton.disabled = isLocked;
+    }
+}
+
 // ===== Admin Modal Functions =====
 function openAdminModal() {
     const modal = document.getElementById('adminSettingsModal');
@@ -43,10 +105,21 @@ function openAdminModal() {
     const settingsSection = document.getElementById('adminSettingsSection');
     const passwordInput = document.getElementById('adminPassword');
 
-    // Reset to password view
-    passwordSection.style.display = 'block';
-    settingsSection.style.display = 'none';
     passwordInput.value = '';
+
+    if (isAdminAuthenticated()) {
+        resetAdminAuthAttempts();
+        passwordSection.style.display = 'none';
+        settingsSection.style.display = 'block';
+        loadSettingsToForm();
+    } else {
+        passwordSection.style.display = 'block';
+        settingsSection.style.display = 'none';
+        updateAdminPasswordControls();
+        if (!passwordInput.disabled) {
+            passwordInput.focus();
+        }
+    }
 
     modal.classList.add('active');
 }
@@ -61,15 +134,36 @@ function verifyAdminPassword() {
     const passwordSection = document.getElementById('adminPasswordSection');
     const settingsSection = document.getElementById('adminSettingsSection');
 
+    if (getRemainingAdminAttempts() <= 0) {
+        updateAdminPasswordControls();
+        alert('❌ Bạn đã nhập sai quá 3 lần. Vui lòng đóng và mở lại phiên làm việc để thử lại.');
+        return;
+    }
+
     if (passwordInput.value === ADMIN_PASSWORD) {
+        setAdminAuthenticated(true);
+        resetAdminAuthAttempts();
         passwordSection.style.display = 'none';
         settingsSection.style.display = 'block';
         loadSettingsToForm();
-    } else {
-        alert('❌ Mật khẩu không đúng!');
-        passwordInput.value = '';
-        passwordInput.focus();
+        return;
     }
+
+    const nextAttempts = getAdminAuthAttempts() + 1;
+    setAdminAuthAttempts(nextAttempts);
+    passwordInput.value = '';
+    updateAdminPasswordControls();
+
+    const remaining = getRemainingAdminAttempts();
+    if (remaining > 0) {
+        alert(`❌ Mật khẩu không đúng! Còn ${remaining} lần thử.`);
+        if (!passwordInput.disabled) {
+            passwordInput.focus();
+        }
+        return;
+    }
+
+    alert('❌ Bạn đã nhập sai quá 3 lần. Vui lòng đóng và mở lại phiên làm việc để thử lại.');
 }
 
 function loadSettingsToForm() {
@@ -238,7 +332,7 @@ function resetExamHistory() {
     // Xóa lịch sử thi (legacy + per-user/device)
     historyKeys.forEach(key => localStorage.removeItem(key));
 
-    // Xóa tất cả bộ đếm số lần thi (key: exam_attempts_TenThiSinh_NgaySinh)
+    // Xóa tất cả bộ đếm số lần thi (key: exam_attempts_TenThiSinh_MatKhau)
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
