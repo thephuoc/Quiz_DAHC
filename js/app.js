@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Quiz Application Main Logic
  * Hệ thống thi trắc nghiệm - DAHC
  */
@@ -514,7 +514,6 @@ const elements = {
     btnPrev: document.getElementById('btnPrev'),
     btnNext: document.getElementById('btnNext'),
     btnFinish: document.getElementById('btnFinish'),
-    downloadExam: document.getElementById('downloadExam'),
 
     // Result
     resultIcon: document.getElementById('resultIcon'),
@@ -745,12 +744,6 @@ function setupEventListeners() {
     if (elements.btnGoHome) {
         elements.btnGoHome.addEventListener('click', goHomeFromResult);
     }
-
-    // Download exam
-    elements.downloadExam.addEventListener('click', (e) => {
-        e.preventDefault();
-        exportToPDF();
-    });
 }
 
 function handleQuestionContainerClick(event) {
@@ -1578,7 +1571,7 @@ async function exportToPDF() {
     document.body.appendChild(loadingDiv);
 
     try {
-        const { doc, fileName } = await _generatePDFDoc('Xuất ngày');
+        const { doc, fileName } = await _generatePDFDoc('Ngày tạo');
 
         // Lưu vào cache (IndexedDB) để xem lại trong History
         const pdfBase64 = doc.output('datauristring').split(',')[1];
