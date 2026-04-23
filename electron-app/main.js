@@ -1,4 +1,4 @@
-﻿const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { URL, fileURLToPath } = require('url');
@@ -381,6 +381,27 @@ function createWindow() {
         logError(`Renderer process gone: ${details.reason}`);
     });
 
+    // Detect when user clicks outside the app or switches to another app
+    mainWindow.on('blur', () => {
+        if (runtimeState.inProgress && mainWindow) {
+            mainWindow.webContents.send('exam-violation');
+            // Try to force focus back
+            setTimeout(() => {
+                if (mainWindow && !mainWindow.isDestroyed()) {
+                    mainWindow.focus();
+                }
+            }, 100);
+        }
+    });
+
+    // Prevent exiting fullscreen manually (Escape key or F11)
+    mainWindow.on('leave-full-screen', () => {
+        if (runtimeState.inProgress && mainWindow) {
+            mainWindow.setFullScreen(true);
+            mainWindow.webContents.send('exam-violation');
+        }
+    });
+
     mainWindow.on('close', (event) => {
         if (!forceQuit && runtimeState.inProgress) {
             event.preventDefault();
@@ -498,6 +519,15 @@ ipcMain.handle('set-exam-state', async (event, nextState) => {
             lastSavedAt: new Date().toISOString(),
         };
         persistRuntimeState();
+
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            if (runtimeState.inProgress) {
+                mainWindow.setFullScreen(true);
+            } else {
+                mainWindow.setFullScreen(false);
+            }
+        }
+
         return { success: true, state: runtimeState };
     } catch (error) {
         return { success: false, error: error.message };

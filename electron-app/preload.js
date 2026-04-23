@@ -85,4 +85,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.on('force-stay-in-exam', wrapped);
         return () => ipcRenderer.removeListener('force-stay-in-exam', wrapped);
     },
+
+    onExamViolation: (callback) => {
+        if (typeof callback !== 'function') return () => { };
+        const wrapped = () => callback();
+        ipcRenderer.on('exam-violation', wrapped);
+        return () => ipcRenderer.removeListener('exam-violation', wrapped);
+    },
 });

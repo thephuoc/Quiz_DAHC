@@ -2835,9 +2835,9 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn điện thì kiểm tra định kỳ tuần trạm điện không người trực (ít nhất 01 lần/tuần) bao gồm những nội dung gì?",
     "options": [
       "Do Nhân viên trực thao tác lưu động kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác.",
-      "Do Nhân viên kỹ thuật của đơn vị kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác C. Do Trạm trưởng TBA 110kV kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác D. Do Đội trưởng Đội QLVH LĐCT kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác",
-      "Đáp án C",
-      "Đáp án D"
+      "Do Nhân viên kỹ thuật của đơn vị kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác",
+      "Do Trạm trưởng TBA 110kV kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác",
+      "Do Đội trưởng Đội QLVH LĐCT kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác"
     ],
     "correct": 0,
     "category": "TBA",
@@ -2848,8 +2848,8 @@ const QUESTION_BANK = [
     "options": [
       "Do Nhân viên kỹ thuật của đơn vị kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác",
       "Do Nhân viên trực thao tác lưu động kiểm tra phát nhiệt, phóng điện bề mặt cách điện.",
-      "Do Trạm trưởng TBA 110kV kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác D. Do Đội trưởng Đội QLVH LĐCT kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác",
-      "Đáp án D"
+      "Do Trạm trưởng TBA 110kV kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác",
+      "Do Đội trưởng Đội QLVH LĐCT kiểm tra tình trạng vận hành, phát hiện những bất thường của các hệ thống thiết bị điện, hệ thống chữa cháy, các hệ thống phụ trợ khác"
     ],
     "correct": 1,
     "category": "TBA",
@@ -3110,12 +3110,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, nội dung cơ bản nhận diện mối nguy khi hàn điện, hàn hơi là ?",
     "options": [
-      "Điện giật do chạm, chập vào các bộ phận dẫn điện; Tai nạn giao thông; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh B. Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh; Cháy, nổ; Khói bụi.",
+      "Điện giật do chạm, chập vào các bộ phận dẫn điện; Tai nạn giao thông; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh",
+      "Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh; Cháy, nổ; Khói bụi.",
       "Điện giật do chạm mỏ hàn; Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng lạnh; Cháy, nổ.",
-      "Điện giật do rò, chạm, chập vào các bộ phận dẫn điện; Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Cháy, nổ.",
-      "Đáp án D"
+      "Điện giật do rò, chạm, chập vào các bộ phận dẫn điện; Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Cháy, nổ."
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "TBA",
     "id": 259
   },
@@ -3146,12 +3146,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, khi hàn điện, hàn hơi, điều cấm nào không đúng (không phù hợp)?",
     "options": [
-      "Không được tiến hành đồng thời cả hàn hơi và hàn điện trong các thùng kín; B. Cấm hàn khi có các chất dễ bắt lửa như xăng, axêton, spirit trắng ở gần vị trí hàn.",
+      "Không được tiến hành đồng thời cả hàn hơi và hàn điện trong các thùng kín;",
+      "Cấm hàn khi có các chất dễ bắt lửa như xăng, axêton, spirit trắng ở gần vị trí hàn.",
       "Cấm hàn ở khoảng cách dưới 5m so với vị trí để các chất dễ cháy nổ.",
-      "Cấm hàn ở khoảng cách dưới 10m so với vị trí để các chất dễ cháy nổ.",
-      "Đáp án D"
+      "Cấm hàn ở khoảng cách dưới 10m so với vị trí để các chất dễ cháy nổ."
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "TBA",
     "id": 262
   },
@@ -3266,12 +3266,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa thì điều cấm nào sau đây không đúng khi làm việc, sử dụng và pha chế ắc quy?",
     "options": [
-      "Cấm hút thuốc, sử dụng bật lửa, lò sưởi trong buồng chứa ắc-quy B. Cấm để nước cất và dung dịch trung hoà ở chỗ cửa ra vào của buồng ắc-quy.",
+      "Cấm hút thuốc, sử dụng bật lửa, lò sưởi trong buồng chứa ắc-quy",
+      "Cấm để nước cất và dung dịch trung hoà ở chỗ cửa ra vào của buồng ắc-quy.",
       "Cấm đổ nước cất vào axít để pha chế thành dung dịch.",
-      "Cấm rót axít vào nước cất để pha chế thành dung dịch.",
-      "Đáp án D"
+      "Cấm rót axít vào nước cất để pha chế thành dung dịch."
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "TBA",
     "id": 272
   },
@@ -3544,8 +3544,8 @@ const QUESTION_BANK = [
     "options": [
       "Người làm việc phải mặc trang phục BHLĐ, đội mũ nhựa, đi ủng cách điện và găng tay cách điện.",
       "Người làm việc phải mặc gọn gàng, nữ giới phải đội mũ, tóc cuốn gọn",
-      "Người làm việc phải mặc gọn gàng, đi ủng cách điện và găng tay cách điện D. Người làm việc phải mang găng tay cách điện, nữ giới phải đội mũ, tóc cuốn gọn và đứng trên thảm cách điện",
-      "Đáp án D"
+      "Người làm việc phải mặc gọn gàng, đi ủng cách điện và găng tay cách điện",
+      "Người làm việc phải mang găng tay cách điện, nữ giới phải đội mũ, tóc cuốn gọn và đứng trên thảm cách điện"
     ],
     "correct": 1,
     "category": "NMD",
@@ -3626,12 +3626,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn điện, biện pháp an toàn nào không đúng khi bảo dưỡng các thiết bị chổi than khi máy phát đang làm việc.",
     "options": [
-      "Khi làm việc phải đội mũ bảo vệ và sử dụng các công cụ bảo vệ mặt và mắt, quần áo được đóng cúc để tránh việc bị cuốn đi bởi các phần quay của máy móc; B. Sử dụng ủng cách điện, thảm cách điện và găng tay cách điện tránh tiếp xúc ngẫu nhiên các phần cơ  thể với các phần được nối đất; C. Không đồng thời chạm tay đến các phần mang điện của hai cực hoặc các phần mang điện và phần được nối đất.",
-      "Phải cắt tải của máy phát, để máy phát chạy ở chế độ bù.",
-      "Đáp án C",
-      "Đáp án D"
+      "Khi làm việc phải đội mũ bảo vệ và sử dụng các công cụ bảo vệ mặt và mắt, quần áo được đóng cúc để tránh việc bị cuốn đi bởi các phần quay của máy móc;",
+      "Sử dụng ủng cách điện, thảm cách điện và găng tay cách điện tránh tiếp xúc ngẫu nhiên các phần cơ thể với các phần được nối đất;",
+      "Không đồng thời chạm tay đến các phần mang điện của hai cực hoặc các phần mang điện và phần được nối đất.",
+      "Phải cắt tải của máy phát, để máy phát chạy ở chế độ bù."
     ],
-    "correct": 1,
+    "correct": 3,
     "category": "NMD",
     "id": 302
   },
@@ -3652,8 +3652,8 @@ const QUESTION_BANK = [
     "options": [
       "Cắt điện, khoá bộ phận truyền động của máy cắt và dao cách ly; treo biển cảnh báo “Cấm đóng điện! Có người đang làm việc” tại MC và DCL cấp điện cho động cơ;",
       "Không phải cắt điện động cơ để sửa chữa nếu khảo sát kỹ, thực hiện theo Phương án đã duyệt.",
-      "Nếu động cơ có đặt chung điểm trung tính thì phải tách điểm trung tính ra khỏi hệ thống; D. Nếu đầu cáp của động cơ điện đã tháo rời thì các công việc tiến hành trên động cơ phải theo phương án được phê duyệt.",
-      "Đáp án D"
+      "Nếu động cơ có đặt chung điểm trung tính thì phải tách điểm trung tính ra khỏi hệ thống;",
+      "Nếu đầu cáp của động cơ điện đã tháo rời thì các công việc tiến hành trên động cơ phải theo phương án được phê duyệt."
     ],
     "correct": 1,
     "category": "NMD",
@@ -3783,9 +3783,9 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, nội dung nào không đúng (không cần thiết) trong quy định BPAT khi kiểm tra độ rung, nhiệt độ các gối đỡ?",
     "options": [
       "Thực hiện đúng theo quy trình vận hành và xử lý sự cố thiết bị điện và thiết bị quay.",
-      "Khi phát hiện độ rung, nhiệt độ của các thiết bị vượt quá trị số tác động bảo vệ mà hệ thống bảo vệ không làm việc, C. Nhân viên vận hành cần thao tác ngừng khẩn cấp thiết bị để bảo vệ thiết bị đồng thời báo cáo cấp trên xin ý kiến xử lý.",
-      "Thực hiện đúng theo quy trình vận hành của từng thiết bị",
-      "Đáp án D"
+      "Khi phát hiện độ rung, nhiệt độ của các thiết bị vượt quá trị số tác động bảo vệ mà hệ thống bảo vệ không làm việc,",
+      "Nhân viên vận hành cần thao tác ngừng khẩn cấp thiết bị để bảo vệ thiết bị đồng thời báo cáo cấp trên xin ý kiến xử lý.",
+      "Thực hiện đúng theo quy trình vận hành của từng thiết bị"
     ],
     "correct": 0,
     "category": "NMD",
@@ -4058,24 +4058,24 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, quy định những nội dung kiểm tra trước  khi sử dụng pa lăng xích kéo tay thì nội dung nào không đúng (không phù hợp)?",
     "options": [
-      "Pa lăng còn đang trong thời hạn kiểm định; B. Trục, cóc hãm, dây xích, móc phải đảm bảo an toàn mớ i cho phép sử dụng;",
+      "Pa lăng còn đang trong thời hạn kiểm định;",
+      "Trục, cóc hãm, dây xích, móc phải đảm bảo an toàn mới cho phép sử dụng;",
       "Vị trí treo pa lăng phải rộng rãi, không gần đường giao thông và đô thị.",
-      "Vật cần nâng phù hợ p với tải trọng cho phé p của pa lăng; Vị trí treo pa lăng phải chắc chắn, chịu được toàn bộ tải trọng.",
-      "Đáp án D"
+      "Vật cần nâng phù hợ p với tải trọng cho phé p của pa lăng; Vị trí treo pa lăng phải chắc chắn, chịu được toàn bộ tải trọng."
     ],
-    "correct": 1,
+    "correct": 2,
     "category": "NMD",
     "id": 338
   },
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, quy định kiểm tra tải trọng khi sử dụng pa lăng xích kéo tay như thế nào?",
     "options": [
-      "Khi nâng tải trọng lên vị trí khoảng 10cm phải dừng lại để kiểm tra an toàn mới được  nâng tiế p; B. Khi nâng tải trọng lên vị trí khoảng 30cm phải dừng lại để kiểm tra an toàn mới được  nâng tiế p; C. Khi nâng tải trọng lên vị trí khoảng 50cm phải dừng lại để kiểm tra an toàn mới được  nâng tiế p;",
-      "Khi nâng tải trọng lên vị trí khoảng 20cm phải dừng lại để kiểm tra an toàn mới được  nâng tiế p;",
-      "Đáp án C",
-      "Đáp án D"
+      "Khi nâng tải trọng lên vị trí khoảng 10cm phải dừng lại để kiểm tra an toàn mới được nâng tiếp;",
+      "Khi nâng tải trọng lên vị trí khoảng 30cm phải dừng lại để kiểm tra an toàn mới được nâng tiếp;",
+      "Khi nâng tải trọng lên vị trí khoảng 50cm phải dừng lại để kiểm tra an toàn mới được nâng tiếp;",
+      "Khi nâng tải trọng lên vị trí khoảng 20cm phải dừng lại để kiểm tra an toàn mới được nâng tiếp;"
     ],
-    "correct": 1,
+    "correct": 3,
     "category": "NMD",
     "id": 339
   },
@@ -4083,9 +4083,9 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, điều cấm nào không đúng trong quy định khi sử dụng pa lăng xích kéo tay?",
     "options": [
       "Cấm kiểm tra an toàn khi bắt đầu nâng tải trọng lên.",
-      "Cấm để dây xích bị xoắn hay thắt nút, vận hành pa lăng khi chốt móc bị hỏng; C. Cấm treo vật nặng lơ lửng trên pa lăng khi không có người giám sát; Cấm dùng xích của pa lăng để quàng vào vật cần nâng; D. Nâng tải trọng lớn hơn giá trị cho phé p của pa lăng; Để người đứng dưới tải trọng",
-      "Đáp án C",
-      "Đáp án D"
+      "Cấm để dây xích bị xoắn hay thắt nút, vận hành pa lăng khi chốt móc bị hỏng;",
+      "Cấm treo vật nặng lơ lửng trên pa lăng khi không có người giám sát; Cấm dùng xích của pa lăng để quàng vào vật cần nâng;",
+      "Nâng tải trọng lớn hơn giá trị cho phé p của pa lăng; Để người đứng dưới tải trọng"
     ],
     "correct": 0,
     "category": "NMD",
@@ -4095,7 +4095,7 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, quy định khi sử dụng xích kéo tay như thế nào?",
     "options": [
       "Khi dây xích khi bị đứt không được nối mà phải thay thế bằng xích mớ i.",
-      "Không được tự chế, lắ p động cơ điện để điều khiển pa lăng xích; Không đượ c kéo quá nhanh vì sẽ làm cho tải trọng bị lắc trong quá trình nâng hạ.",
+      "Không được tự chế, lắ p động cơ điện để điều khiển pa lăng xích; Không được kéo quá nhanh vì sẽ làm cho tải trọng bị lắc trong quá trình nâng hạ.",
       "Không dùng xích của pa lăng để quàng vào vật cần nâng.",
       "Tất cả các đáp án trên (dưới) đều đúng."
     ],
@@ -4106,12 +4106,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, nội dung cơ bản nhận diện mối nguy khi hàn điện, hàn hơi là ?",
     "options": [
-      "Điện giật do chạm, chập vào các bộ phận dẫn điện; Tai nạn giao thông; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh B. Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh; Cháy, nổ; Khói bụi.",
+      "Điện giật do chạm, chập vào các bộ phận dẫn điện; Tai nạn giao thông; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh",
+      "Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Bỏng lạnh; Cháy, nổ; Khói bụi.",
       "Điện giật do chạm mỏ hàn; Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng lạnh; Cháy, nổ.",
-      "Điện giật do rò, chạm, chập vào các bộ phận dẫn điện; Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Cháy, nổ.",
-      "Đáp án D"
+      "Điện giật do rò, chạm, chập vào các bộ phận dẫn điện; Bức xạ có hại do hồ quang điện; Khí, bụi độc hại; Bỏng do hạt kim loại nóng chảy, kim loại có nhiệt độ cao; Cháy, nổ."
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "NMD",
     "id": 342
   },
@@ -4142,12 +4142,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Quy trình An toàn thủy, cơ, nhiệt, hóa, khi hành điện, hàn hơi, điều cấm nào không đúng (không phù hợp)?",
     "options": [
-      "Không được tiến hành đồng thời cả hàn hơi và hàn điện trong các thùng kín; B. Cấm hàn khi có các chất dễ bắt lửa như xăng, axêton, spirit trắng ở gần vị trí hàn.",
+      "Không được tiến hành đồng thời cả hàn hơi và hàn điện trong các thùng kín;",
+      "Cấm hàn khi có các chất dễ bắt lửa như xăng, axêton, spirit trắng ở gần vị trí hàn.",
       "Cấm hàn ở khoảng cách dưới 5m so với vị trí để các chất dễ cháy nổ.",
-      "Cấm hàn ở khoảng cách dưới 10m so với vị trí để các chất dễ cháy nổ.",
-      "Đáp án D"
+      "Cấm hàn ở khoảng cách dưới 10m so với vị trí để các chất dễ cháy nổ."
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "NMD",
     "id": 345
   },
@@ -4286,12 +4286,12 @@ const QUESTION_BANK = [
   {
     "question": "Theo Theo Quy trình An toàn thủy, cơ, nhiệt, hóa thì điều cấm nào sau đây không đúng khi làm việc, sử dụng và pha chế ắc quy?",
     "options": [
-      "Cấm hút thuốc, sử dụng bật lửa, lò sưởi trong buồng chứa ắc-quy B. Cấm để nước cất và dung dịch trung hoà ở chỗ cửa ra vào của buồng ắc-quy.",
+      "Cấm hút thuốc, sử dụng bật lửa, lò sưởi trong buồng chứa ắc-quy",
+      "Cấm để nước cất và dung dịch trung hoà ở chỗ cửa ra vào của buồng ắc-quy.",
       "Cấm đổ nước cất vào axít để pha chế thành dung dịch.",
-      "Cấm rót axít vào nước cất để pha chế thành dung dịch.",
-      "Đáp án D"
+      "Cấm rót axít vào nước cất để pha chế thành dung dịch."
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "NMD",
     "id": 357
   },
@@ -4346,12 +4346,12 @@ const QUESTION_BANK = [
   {
     "question": "Thanh cái, thiết bị điện tại nhà máy, trạm điện cho phép không cần nối đất di động nếu đủ điều kiện?",
     "options": [
-      "Đã được cách ly hoàn toàn B. Đã khóa thiết bị đóng cắt liên quan để tránh thao tác nhầm.",
+      "Đã được cách ly hoàn toàn",
+      "Đã khóa thiết bị đóng cắt liên quan để tránh thao tác nhầm.",
       "Đã được nối đất/tiếp địa cố định.",
-      "Tất cả các đáp án trên (dưới) đều đúng",
-      "Đáp án D"
+      "Tất cả các đáp án trên (dưới) đều đúng"
     ],
-    "correct": 2,
+    "correct": 3,
     "category": "NMD",
     "id": 362
   },
@@ -4371,9 +4371,9 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn điện, việc bảo dưỡng chổi than khi động cơ điện đang làm việc, nội dung nào không bắt buộc phải thực hiện?",
     "options": [
       "Phải lập Phương án TCTC và BPAT mới được thực hiện",
-      "Nhân viên được đào tạo cho nhiệm vụ này và sử dụng các công cụ bảo vệ mặt và mắt, quần áo bảo hộ, đề phòng việc cuốn đi bởi các phần quay của động cơ điện; Sử dụng giày và thảm cách điện; C. Sử dụng giày, găng tay và thảm cách điện để làm việc. Không đồng thời tiếp xúc tay tới các phần mang điện của hai cực hoặc phần mang điện và phần được nối đất.",
-      "Khi mài nhẵn vành của Rotor trong động cơ điện đang quay phải sử dụng các khuôn bằng vật liệu cách điện.",
-      "Đáp án D"
+      "Nhân viên được đào tạo cho nhiệm vụ này và sử dụng các công cụ bảo vệ mặt và mắt, quần áo bảo hộ, đề phòng việc cuốn đi bởi các phần quay của động cơ điện; Sử dụng giày và thảm cách điện;",
+      "Sử dụng giày, găng tay và thảm cách điện để làm việc. Không đồng thời tiếp xúc tay tới các phần mang điện của hai cực hoặc phần mang điện và phần được nối đất.",
+      "Khi mài nhẵn vành của Rotor trong động cơ điện đang quay phải sử dụng các khuôn bằng vật liệu cách điện."
     ],
     "correct": 0,
     "category": "NMD",
@@ -4384,8 +4384,8 @@ const QUESTION_BANK = [
     "options": [
       "Người làm việc phải mặc gọn gàng, nữ giới phải đội mũ, tóc cuốn gọn",
       "Người làm việc phải mặc trang phục BHLĐ, đội mũ nhựa.",
-      "Người làm việc phải mặc gọn gàng, đi ủng cách điện, nữ giới phải đội mũ, tóc cuốn gọn D. Người làm việc phải mang găng tay cách điện, nữ giới phải đội mũ, tóc cuốn gọn",
-      "Đáp án D"
+      "Người làm việc phải mặc gọn gàng, đi ủng cách điện, nữ giới phải đội mũ, tóc cuốn gọn",
+      "Người làm việc phải mang găng tay cách điện, nữ giới phải đội mũ, tóc cuốn gọn"
     ],
     "correct": 0,
     "category": "NMD",
@@ -4419,9 +4419,9 @@ const QUESTION_BANK = [
     "question": "Theo Quy trình An toàn điện, biện pháp an toàn nào không đúng khi bảo dưỡng các thiết bị chổi than khi máy phát đang làm việc ?",
     "options": [
       "Phải cắt tải của máy phát, để máy phát chạy ở chế độ bù.",
-      "Khi làm việc phải đội mũ bảo vệ và sử dụng các công cụ bảo vệ mặt và mắt, quần áo được đóng cúc để tránh việc bị cuốn đi bởi các phần quay của máy móc; C. Sử dụng ủng cách điện, thảm cách điện và găng tay cách điện tránh tiếp xúc ngẫu nhiên các phần cơ thể với các phần được nối đất; D. Không đồng thời chạm tay đến các phần mang điện của hai cực hoặc các phần mang điện và phần được nối đất.",
-      "Đáp án C",
-      "Đáp án D"
+      "Khi làm việc phải đội mũ bảo vệ và sử dụng các công cụ bảo vệ mặt và mắt, quần áo được đóng cúc để tránh việc bị cuốn đi bởi các phần quay của máy móc;",
+      "Sử dụng ủng cách điện, thảm cách điện và găng tay cách điện tránh tiếp xúc ngẫu nhiên các phần cơ thể với các phần được nối đất;",
+      "Không đồng thời chạm tay đến các phần mang điện của hai cực hoặc các phần mang điện và phần được nối đất."
     ],
     "correct": 0,
     "category": "NMD",
@@ -4432,8 +4432,8 @@ const QUESTION_BANK = [
     "options": [
       "Không phải cắt điện động cơ để sửa chữa nếu khảo sát kỹ, thực hiện theo Phương án đã duyệt.",
       "Cắt điện, khoá bộ phận truyền động của máy cắt và dao cách ly; treo biển cảnh báo “Cấm đóng điện!",
-      "Nếu động cơ có đặt chung điểm trung tính thì phải tách điểm trung tính ra khỏi hệ thống; D. Nếu đầu cáp của động cơ điện đã tháo rời thì các công việc tiến hành trên động cơ phải theo phương án được phê duyệt.",
-      "Đáp án D"
+      "Nếu động cơ có đặt chung điểm trung tính thì phải tách điểm trung tính ra khỏi hệ thống;",
+      "Nếu đầu cáp của động cơ điện đã tháo rời thì các công việc tiến hành trên động cơ phải theo phương án được phê duyệt."
     ],
     "correct": 0,
     "category": "NMD",
@@ -4475,298 +4475,54 @@ const CATEGORIES_INFO = {
 
 // ===== Anti-Repetition Helpers =====
 
-const QUESTION_SELECTION_DEFAULTS = {
-  recentExamCount: 3,
-  cooldownExams: 3,
-  maxRepeatRatio: 0.2,
-  recentPenalty: 1.2,
-  totalPenalty: 0.35,
-  rotationMode: true,
-  conceptMaxPerExam: 1,
-  difficultyTargets: null,
-  categoryFallbacks: null,
-  allowCrossCategoryFill: true,
-  seed: null,
-  historyKeyPrefix: 'exam_history',
-};
-
-function normalizeKeyPart(value) {
-  const cleaned = String(value || '').trim().toLowerCase();
-  return encodeURIComponent(cleaned).replace(/%20/g, '-');
-}
-
-function getDeviceId() {
-  if (typeof localStorage === 'undefined') return 'device-unknown';
-  const key = 'quiz_device_id';
-  const existing = localStorage.getItem(key);
-  if (existing) return existing;
-  const newId = `device-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-  localStorage.setItem(key, newId);
-  return newId;
-}
-
-function getHistoryKey(options) {
-  const prefix = options?.historyKeyPrefix || 'exam_history';
-  const deviceId = getDeviceId();
-  const user = (typeof state !== 'undefined' && state.user) || (typeof quizSettings !== 'undefined' && quizSettings.user);
-  const nameKey = user?.fullName ? normalizeKeyPart(user.fullName) : '';
-  const passKey = user?.password ? normalizeKeyPart(user.password) : '';
-  if (nameKey && passKey) {
-    return `${prefix}::${deviceId}::${nameKey}::${passKey}`;
-  }
-  return `${prefix}::${deviceId}`;
-}
-
-function getExamHistory(options) {
+function getRecentQuestionIds(lastNExams = 3) {
   try {
-    if (typeof localStorage === 'undefined') return [];
-    const key = getHistoryKey(options);
-    const raw = localStorage.getItem(key);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
-    }
-    const legacyRaw = localStorage.getItem(options?.historyKeyPrefix || 'exam_history');
-    if (!legacyRaw) return [];
-    const legacy = JSON.parse(legacyRaw);
-    return Array.isArray(legacy) ? legacy : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function sortHistoryByTime(history) {
-  return [...history].sort((a, b) => {
-    const ta = a.savedAt || a.exam?.endTime || '';
-    const tb = b.savedAt || b.exam?.endTime || '';
-    return tb.localeCompare(ta);
-  });
-}
-
-function getRecentQuestionIdsFromHistory(history, lastNExams) {
-  if (!Array.isArray(history) || history.length === 0 || lastNExams <= 0) return new Set();
-  const sorted = sortHistoryByTime(history);
-  const recentIds = new Set();
-  sorted.slice(0, lastNExams).forEach(record => {
-    const ids = record.exam?.questionIds;
-    if (Array.isArray(ids)) ids.forEach(id => recentIds.add(id));
-  });
-  return recentIds;
-}
-
-function buildQuestionStats(history, recentExamCount) {
-  const sorted = sortHistoryByTime(history);
-  const totalCountById = new Map();
-  const recentCountById = new Map();
-  const recentIds = new Set();
-
-  sorted.forEach((record, idx) => {
-    const ids = record.exam?.questionIds;
-    if (!Array.isArray(ids)) return;
-    ids.forEach(id => {
-      totalCountById.set(id, (totalCountById.get(id) || 0) + 1);
-      if (idx < recentExamCount) {
-        recentCountById.set(id, (recentCountById.get(id) || 0) + 1);
-        recentIds.add(id);
-      }
+    const raw = (typeof localStorage !== 'undefined') && localStorage.getItem('exam_history');
+    if (!raw) return new Set();
+    const history = JSON.parse(raw);
+    if (!Array.isArray(history) || history.length === 0) return new Set();
+    const sorted = [...history].sort((a, b) => {
+      const ta = a.savedAt || a.exam?.endTime || '';
+      const tb = b.savedAt || b.exam?.endTime || '';
+      return tb.localeCompare(ta);
     });
-  });
-
-  return { sorted, totalCountById, recentCountById, recentIds };
-}
-
-function hashStringToSeed(value) {
-  const str = String(value || '');
-  let hash = 2166136261;
-  for (let i = 0; i < str.length; i++) {
-    hash ^= str.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
+    const recentIds = new Set();
+    sorted.slice(0, lastNExams).forEach(record => {
+      const ids = record.exam?.questionIds;
+      if (Array.isArray(ids)) ids.forEach(id => recentIds.add(id));
+    });
+    return recentIds;
+  } catch (e) {
+    return new Set();
   }
-  return hash >>> 0;
 }
 
-function createSeededRng(seed) {
-  let a = (seed >>> 0) || 1;
-  return function rng() {
-    a |= 0;
-    a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+function selectQuestionsAvoidingRecent(questionPool, count, recentQuestionIds) {
+  const unasked = questionPool.filter(q => !recentQuestionIds.has(q.id));
+  const asked   = questionPool.filter(q =>  recentQuestionIds.has(q.id));
+  const shuffle = arr => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   };
-}
-
-function getExamSeed(options) {
-  if (options?.seed !== null && options?.seed !== undefined) return options.seed;
-  const user = (typeof state !== 'undefined' && state.user) || (typeof quizSettings !== 'undefined' && quizSettings.user) || {};
-  const attempt = user.attemptNumber || '';
-  const today = new Date();
-  const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  return `${user.fullName || ''}|${user.password || ''}|${attempt}|${dateKey}`;
-}
-
-function shuffleWithRng(items, rng) {
-  const a = [...items];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function weightedSample(items, count, weightFn, rng) {
-  const pool = [...items];
-  const selected = [];
-  while (selected.length < count && pool.length > 0) {
-    const weights = pool.map(weightFn);
-    const total = weights.reduce((sum, w) => sum + w, 0);
-    if (total <= 0) {
-      selected.push(...shuffleWithRng(pool, rng).slice(0, count - selected.length));
-      break;
-    }
-    let r = rng() * total;
-    let idx = 0;
-    for (; idx < pool.length; idx++) {
-      r -= weights[idx];
-      if (r <= 0) break;
-    }
-    selected.push(pool[idx]);
-    pool.splice(idx, 1);
-  }
-  return selected;
-}
-
-function normalizeDifficultyTargets(targets) {
-  if (!targets || typeof targets !== 'object') return null;
-  const entries = Object.entries(targets).filter(([, v]) => typeof v === 'number' && v > 0);
-  if (entries.length === 0) return null;
-  const total = entries.reduce((sum, [, v]) => sum + v, 0);
-  const normalized = {};
-  entries.forEach(([k, v]) => {
-    normalized[k] = v / total;
-  });
-  return normalized;
-}
-
-function selectFromPool(pool, count, context) {
-  if (count <= 0) return [];
-  const { stats, options, rng, selectedIds, selectedConcepts, maxRecentAllowed } = context;
-  const { recentCountById, totalCountById, recentIds, cooldownIds } = stats;
-  const conceptLimit = options.conceptMaxPerExam || 0;
-  if (typeof context.recentSelectedCount !== 'number') context.recentSelectedCount = 0;
-
-  const filterByConstraints = (list, allowCooldown) => list.filter(q => {
-    if (selectedIds.has(q.id)) return false;
-    if (!allowCooldown && cooldownIds.has(q.id)) return false;
-    if (conceptLimit > 0 && q.conceptId) {
-      const current = selectedConcepts.get(q.conceptId) || 0;
-      if (current >= conceptLimit) return false;
-    }
-    return true;
-  });
-
-  const pickWeighted = (candidates, needed) => {
-    return weightedSample(candidates, needed, q => {
-      const recentCount = recentCountById.get(q.id) || 0;
-      const totalCount = totalCountById.get(q.id) || 0;
-      let weight = 1;
-      if (recentCount > 0) weight /= (1 + recentCount * options.recentPenalty);
-      if (totalCount > 0) weight /= (1 + totalCount * (options.rotationMode ? (options.totalPenalty * 1.5) : options.totalPenalty));
-      if (options.rotationMode && totalCount === 0) weight *= 1.5;
-      return Math.max(weight, 0.0001);
-    }, rng);
-  };
-
-  let candidates = filterByConstraints(pool, false);
-  if (candidates.length < count) {
-    candidates = filterByConstraints(pool, true);
-  }
-
-  const selected = [];
-  while (selected.length < count && candidates.length > 0) {
-    const needed = count - selected.length;
-    const batch = pickWeighted(candidates, needed);
-    if (batch.length === 0) break;
-
-    for (const q of batch) {
-      const isRecent = recentIds.has(q.id);
-      if (isRecent && context.recentSelectedCount >= maxRecentAllowed) continue;
-      selected.push(q);
-      selectedIds.add(q.id);
-      if (q.conceptId) {
-        selectedConcepts.set(q.conceptId, (selectedConcepts.get(q.conceptId) || 0) + 1);
-      }
-      if (isRecent) context.recentSelectedCount += 1;
-      if (selected.length >= count) break;
-    }
-
-    candidates = candidates.filter(q => !selectedIds.has(q.id));
-  }
-
-  return selected;
-}
-
-function selectQuestionsSmart(questionPool, count, context) {
-  if (count <= 0) return [];
-  const difficultyTargets = normalizeDifficultyTargets(context.options.difficultyTargets);
-  if (!difficultyTargets) {
-    return selectFromPool(questionPool, count, context);
-  }
-
-  const grouped = {};
-  questionPool.forEach(q => {
-    const diff = q.difficulty || 'unknown';
-    if (!grouped[diff]) grouped[diff] = [];
-    grouped[diff].push(q);
-  });
-
-  const selected = [];
-  Object.entries(difficultyTargets).forEach(([diff, ratio]) => {
-    if (selected.length >= count) return;
-    const desired = Math.round(count * ratio);
-    if (!grouped[diff] || desired <= 0) return;
-    const picked = selectFromPool(grouped[diff], desired, context);
-    selected.push(...picked);
-  });
-
+  const selected = shuffle(unasked).slice(0, count);
   if (selected.length < count) {
-    const remainingPool = questionPool.filter(q => !context.selectedIds.has(q.id));
-    selected.push(...selectFromPool(remainingPool, count - selected.length, context));
+    selected.push(...shuffle(asked).slice(0, count - selected.length));
   }
-
-  return selected.slice(0, count);
+  return selected;
 }
 
 // ===== Main Question Selector =====
 
-function getRandomQuestions(totalQuestions = 30, settings = null, selectionOptions = null) {
-  const options = {
-    ...QUESTION_SELECTION_DEFAULTS,
-    ...(typeof quizSettings !== 'undefined' ? quizSettings.questionSelection : null),
-    ...(selectionOptions || null),
-  };
+function getRandomQuestions(totalQuestions = 30, settings = null) {
+  const recentIds = getRecentQuestionIds(3);
 
-  const history = getExamHistory(options);
-  const stats = buildQuestionStats(history, options.recentExamCount);
-  const cooldownIds = getRecentQuestionIdsFromHistory(history, options.cooldownExams);
-  const seed = getExamSeed(options);
-  const rng = createSeededRng(hashStringToSeed(seed));
-
-  const context = {
-    stats: {
-      ...stats,
-      cooldownIds,
-    },
-    options,
-    rng,
-    selectedIds: new Set(),
-    selectedConcepts: new Map(),
-    maxRecentAllowed: Math.max(0, Math.floor(totalQuestions * options.maxRepeatRatio)),
-  };
-
-  if (!settings || Object.keys(settings).length === 0) {
-    return selectQuestionsSmart(QUESTION_BANK, totalQuestions, context)
-      .slice(0, totalQuestions);
+  if (!settings) {
+    return selectQuestionsAvoidingRecent(QUESTION_BANK, totalQuestions, recentIds)
+           .slice(0, totalQuestions);
   }
 
   const categoryOrder = ['PCCC', 'QT_ATD', 'ATD', 'TBA', 'NMD'];
@@ -4775,33 +4531,18 @@ function getRandomQuestions(totalQuestions = 30, settings = null, selectionOptio
   for (const category of categoryOrder) {
     const count = settings[category];
     if (!count || count <= 0) continue;
-
-    const basePool = QUESTION_BANK.filter(q => q.category === category);
-    let pool = basePool;
-
-    const fallbacks = options.categoryFallbacks?.[category];
-    if (Array.isArray(fallbacks) && fallbacks.length > 0) {
-      const fallbackPool = QUESTION_BANK.filter(q => fallbacks.includes(q.category));
-      const merged = [...basePool, ...fallbackPool];
-      const seen = new Set();
-      pool = merged.filter(q => {
-        if (seen.has(q.id)) return false;
-        seen.add(q.id);
-        return true;
-      });
-    }
-
-    const picked = selectQuestionsSmart(pool, count, context);
-    selectedQuestions = selectedQuestions.concat(picked);
+    const pool = QUESTION_BANK.filter(q => q.category === category);
+    selectedQuestions = selectedQuestions.concat(
+      selectQuestionsAvoidingRecent(pool, count, recentIds)
+    );
   }
 
   if (selectedQuestions.length < totalQuestions) {
-    const remaining = QUESTION_BANK.filter(q => !context.selectedIds.has(q.id));
-    if (options.allowCrossCategoryFill) {
-      selectedQuestions = selectedQuestions.concat(
-        selectQuestionsSmart(remaining, totalQuestions - selectedQuestions.length, context)
-      );
-    }
+    const selectedIds = new Set(selectedQuestions.map(q => q.id));
+    const remaining = QUESTION_BANK.filter(q => !selectedIds.has(q.id));
+    selectedQuestions = selectedQuestions.concat(
+      selectQuestionsAvoidingRecent(remaining, totalQuestions - selectedQuestions.length, recentIds)
+    );
   }
 
   return selectedQuestions.slice(0, totalQuestions);

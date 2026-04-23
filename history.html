@@ -474,11 +474,74 @@
             <div class="card-list" id="historyList"></div>
         </div>
 
+
+            <a href="index.html" class="back-link">← Quay về trang chủ</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContent" style="display: none;">
+        <header>
+            <h1>📂 Quản Lý Kết Quả Thi</h1>
+            <p>Xem lịch sử thi và tải lại PDF từ bộ nhớ tạm</p>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-primary" onclick="backupDataToRoot()"
+                    style="margin: 0 auto; display: inline-flex; gap: 8px;">
+                    📂 Sao lưu dữ liệu ra thư mục gốc (Data_Export)
+                </button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('pdf-cache', event)">💾 PDF Cache</button>
+            <button class="tab" onclick="showSection('exam-history', event)">📋 Lịch Sử Thi</button>
+        </div>
+
+        <!-- PDF Cache Section -->
+        <div id="pdf-cache" class="section active">
+            <h2>💾 PDF Đã Lưu Trong Bộ Nhớ Tạm</h2>
+
+            <div class="stats" id="pdfStats"></div>
+
+            <div class="toolbar">
+                <input type="text" class="search-box" id="searchPDF" placeholder="🔍 Tìm kiếm theo tên file..."
+                    oninput="filterPDFList()">
+                <div>
+                    <button class="btn btn-danger" onclick="clearAllPDFCache()">🗑️ Xóa tất cả</button>
+                </div>
+            </div>
+
+            <div class="card-list" id="pdfList"></div>
+        </div>
+
+        <!-- Exam History Section -->
+        <div id="exam-history" class="section">
+            <h2>📋 Lịch Sử Tất Cả Bài Thi</h2>
+
+            <div class="stats" id="historyStats"></div>
+
+            <div class="toolbar">
+                <input type="text" class="search-box" id="searchHistory" placeholder="🔍 Tìm kiếm theo tên thí sinh..."
+                    oninput="filterHistoryList()">
+                <div>
+                    <button class="btn btn-danger" onclick="clearAllHistory()">🗑️ Xóa tất cả</button>
+                </div>
+            </div>
+
+            <div class="card-list" id="historyList"></div>
+        </div>
+
         <footer>
             <p>Hệ thống thi trắc nghiệm DAHC | <a href="index.html">← Về trang chủ</a></p>
         </footer>
     </div>
 
+    <script src="js/lib/jspdf.umd.min.js"></script>
+    <script src="js/lib/html2canvas.min.js"></script>
+    <script src="js/lib/Roboto-Regular-normal.js"></script>
+    <script src="js/lib/Roboto-Medium-normal.js"></script>
+    <script src="js/questions.js"></script>
+    <script src="js/history-electron.js"></script>
     <script>
         // ===== Password =====
         const HISTORY_PASSWORD = 'DAHC@6789'; // Cùng mật khẩu với Admin
@@ -968,6 +1031,9 @@
                         </div>
                     </div>
                     <div class="card-actions">
+                        <button class="btn btn-primary" onclick="reExportPDF(${index})">
+                            📄 Xuất PDF
+                        </button>
                         <button class="btn btn-secondary" onclick="viewDetail(${index})">
                             👁️ Chi tiết
                         </button>
@@ -1047,12 +1113,228 @@ ${item.exam?.timeUp ? '⚠️ Hết giờ: Có' : ''}
             loadExamHistory();
         }
 
+        async function reExportPDF(index) {
+            const history = getExamHistory();
+            const item = history[index];
+            if (!item) return;
+
+            if (typeof window.jspdf === 'undefined' || typeof QUESTION_BANK === 'undefined') {
+                alert("Không thể tải thư viện xuất PDF hoặc Ngân hàng câu hỏi. Vui lòng tải lại trang!");
+                return;
+            }
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'pdfLoading';
+            loadingDiv.innerHTML = `
+                <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;">
+                    <div style="background:white;padding:30px 50px;border-radius:10px;text-align:center;">
+                        <div style="font-size:50px;margin-bottom:15px;">📄</div>
+                        <div style="font-size:20px;color:#1E293B;font-weight:bold;">Đang tạo lại PDF...</div>
+                        <div style="font-size:14px;color:#475569;margin-top:10px;">Quá trình này mất khoảng 2-5 giây, vui lòng đợi.</div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+
+            try {
+                const examQuestions = (item.answersSummary || []).map(summary => {
+                    const qObj = QUESTION_BANK.find(q => q.id === summary.id);
+                    if (!qObj) return null;
+                    return {
+                        question: qObj.question,
+                        options: qObj.options,
+                        userAnswer: summary.ua,
+                        correctAnswer: summary.ca,
+                        isCorrect: summary.ok
+                    };
+                }).filter(q => q !== null);
+
+                if (examQuestions.length === 0) {
+                    alert('Lịch sử bài thi này quá cũ, không hỗ trợ xuất lại file PDF!');
+                    return;
+                }
+
+                let correctAnswers = item.result?.correctAnswers || 0;
+                let totalQuestions = item.result?.totalQuestions || examQuestions.length;
+                let isPassed = item.result?.isPassed || false;
+
+                const questionsHtml = examQuestions.map((q, idx) => `
+                    <div class="pdf-block pdf-question" style="margin-bottom:10px;padding:10px;border-left:3px solid ${q.isCorrect ? '#10B981' : '#EF4444'};background:#F8FAFC;border-radius:6px;">
+                        <div style="font-weight:bold;font-size:11px;color:#1E293B;margin-bottom:6px;">
+                            <span style="color:${q.isCorrect ? '#10B981' : '#EF4444'};margin-right:5px;">${q.isCorrect ? '✓' : '✗'}</span>
+                            Câu ${idx + 1}: ${q.question}
+                        </div>
+                        <div style="margin-left:15px;font-size:10px;">
+                            ${q.options.map((opt, optIdx) => {
+                                const prefix = String.fromCharCode(65 + optIdx);
+                                let bgColor = '#fff';
+                                let borderColor = '#E2E8F0';
+                                let textColor = '#1E293B';
+                                let symbol = '';
+
+                                if (optIdx === q.correctAnswer) {
+                                    bgColor = '#ECFDF5';
+                                    borderColor = '#10B981';
+                                    symbol = '✓ ';
+                                }
+                                if (optIdx === q.userAnswer && optIdx !== q.correctAnswer) {
+                                    bgColor = '#FEF2F2';
+                                    borderColor = '#EF4444';
+                                    symbol = '✗ ';
+                                }
+
+                                return `<div style="padding:5px 8px;margin:3px 0;border-radius:4px;background:${bgColor};border:1px solid ${borderColor};color:${textColor};">
+                                    <strong>${symbol}${prefix}.</strong> ${opt}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        ${q.userAnswer === -1 ? '<div style="color:#F59E0B;margin-top:5px;margin-left:15px;font-size:9px;font-style:italic;">⚠ Chưa trả lời</div>' : ''}
+                    </div>
+                `).join('');
+
+                const container = document.createElement('div');
+                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:760px;background:white;color:black;font-family:Roboto,Arial,sans-serif;padding:20px;';
+
+                container.innerHTML = `
+                    <div class="pdf-root" style="max-width:760px;">
+                        <div class="pdf-block pdf-header" style="margin-bottom:14px;">
+                            <div style="text-align:center;margin-bottom:14px;">
+                                <h1 style="color:#0D9488;font-size:22px;margin:0 0 8px 0;">KẾT QUẢ BÀI THI TRẮC NGHIỆM</h1>
+                                <div style="height:2px;background:linear-gradient(90deg, #0D9488, #5EEAD4, #0D9488);"></div>
+                            </div>
+                            <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;">
+                                <tr>
+                                    <td style="padding:4px 0;width:25%;"><strong>Họ và tên:</strong></td>
+                                    <td style="padding:4px 0;width:25%;">${item.user?.fullName}</td>
+                                    <td style="padding:4px 0;width:25%;"><strong>Đơn vị:</strong></td>
+                                    <td style="padding:4px 0;width:25%;">${item.user?.department}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 0;"><strong>Chữ ký thí sinh:</strong></td>
+                                    <td style="padding:4px 0;border-bottom:1px dotted #999;min-height:30px;"></td>
+                                    <td style="padding:4px 0;"><strong>Ngày thi:</strong></td>
+                                    <td style="padding:4px 0;">${formatDate(item.exam?.startTime)}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 0;"><strong>Thời gian làm bài:</strong></td>
+                                    <td style="padding:4px 0;">${item.exam?.duration || 'N/A'}</td>
+                                    <td style="padding:4px 0;"><strong>Lần thi:</strong></td>
+                                    <td style="padding:4px 0;">Lần ${item.user?.attemptNumber}</td>
+                                </tr>
+                            </table>
+                            <div style="padding:12px;background:${isPassed ? '#ECFDF5' : '#FEF2F2'};border-radius:8px;">
+                                <table style="width:100%;font-size:11px;">
+                                    <tr>
+                                        <td style="text-align:center;width:33%;">
+                                            <div style="font-size:28px;font-weight:bold;color:${isPassed ? '#10B981' : '#EF4444'};">${correctAnswers}/${totalQuestions}</div>
+                                            <div style="font-size:10px;color:#475569;">Điểm số</div>
+                                        </td>
+                                        <td style="text-align:center;width:34%;">
+                                            <div style="font-size:14px;font-weight:bold;color:#10B981;">✓ ${correctAnswers} đúng</div>
+                                            <div style="font-size:14px;font-weight:bold;color:#EF4444;margin-top:3px;">✗ ${totalQuestions - correctAnswers} sai</div>
+                                        </td>
+                                        <td style="text-align:center;width:33%;">
+                                            <div style="font-size:18px;font-weight:bold;color:${isPassed ? '#10B981' : '#EF4444'};">
+                                                ${isPassed ? 'ĐẠT' : 'KHÔNG ĐẠT'}
+                                            </div>
+                                            <div style="font-size:10px;color:#475569;">Chuẩn: 27/${totalQuestions}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pdf-block pdf-section-title" style="margin:10px 0 6px 0;">
+                            <h2 style="color:#0D9488;font-size:14px;border-bottom:2px solid #0D9488;padding-bottom:5px;margin:0;">
+                                CHI TIẾT CÂU TRẢ LỜI
+                            </h2>
+                        </div>
+
+                        <div class="pdf-questions">
+                            ${questionsHtml}
+                        </div>
+
+                        <div class="pdf-block pdf-footer" style="margin-top:12px;text-align:center;padding-top:8px;border-top:1px solid #E2E8F0;font-size:9px;color:#94A3B8;">
+                            <div>Hệ thống thi trắc nghiệm DAHC</div>
+                            <div style="margin-top:3px;">Trích xuất dự phòng lúc: ${formatDate(new Date())}</div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(container);
+
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4', true);
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 10;
+                const contentWidth = pageWidth - margin * 2;
+                let cursorY = margin;
+
+                const blocks = Array.from(container.querySelectorAll('.pdf-block'));
+
+                for (const block of blocks) {
+                    const canvas = await html2canvas(block, {
+                        scale: 3,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        windowWidth: 760,
+                        imageTimeout: 0,
+                        removeContainer: true
+                    });
+                    const imgHeight = (canvas.height * contentWidth) / canvas.width;
+
+                    if (cursorY + imgHeight > pageHeight - margin) {
+                        doc.addPage();
+                        cursorY = margin;
+                    }
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.89);
+                    doc.addImage(imgData, 'JPEG', margin, cursorY, contentWidth, imgHeight, undefined, 'SLOW');
+                    cursorY += imgHeight + 2;
+                }
+
+                document.body.removeChild(container);
+
+                function removeVietnameseTonesH(str) {
+                    if (!str) return '';
+                    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/[^a-zA-Z0-9\s]/g, '');
+                }
+
+                const nameSafe = removeVietnameseTonesH(item.user?.fullName).replace(/\s+/g, '_');
+                const deptSafe = removeVietnameseTonesH(item.user?.department).replace(/\s+/g, '');
+                const fileName = `KetQua_${nameSafe}_${deptSafe}_L${item.user?.attemptNumber}_Export_${Date.now()}.pdf`;
+
+                if (window.electronAPI && window.electronAPI.isElectron && typeof window.electronAPI.savePDF === 'function') {
+                    const pdfBase64 = doc.output('datauristring').split(',')[1];
+                    const result = await window.electronAPI.savePDF(pdfBase64, fileName);
+                    
+                    if (result && result.success) {
+                        alert('✅ Đã xuất và điện tải về thành công: ' + result.fileName);
+                    } else if (!result || !result.canceled) {
+                        throw new Error('Electron save failed');
+                    }
+                } else {
+                    doc.save(fileName);
+                    alert('✅ Đã xuất và tải PDF thành công!');
+                }
+
+            } catch (error) {
+                console.error('Error re-exporting PDF:', error);
+                alert('❌ Lỗi tạo PDF: ' + error.message);
+            } finally {
+                document.getElementById('pdfLoading')?.remove();
+            }
+        }
+
         function clearAllHistory() {
             if (!confirm('Bạn có chắc muốn xóa TẤT CẢ lịch sử thi?')) return;
 
             getAllHistoryStorageKeys().forEach((key) => localStorage.removeItem(key));
-            loadExamHistory();
-            alert('✅ Đã xóa tất cả lịch sử thi!');
         }
 
         function filterHistoryList() {

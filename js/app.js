@@ -21,7 +21,8 @@ const state = {
         interval: null
     },
     startTime: null,
-    endTime: null
+    endTime: null,
+    violationCount: 0
 };
 
 // ===== Exam Attempt Counter =====
@@ -391,6 +392,7 @@ function saveSession() {
             timerRemaining: state.timer.remaining,
             timerDuration: state.timer.duration,
             startTime: state.startTime ? state.startTime.toISOString() : null,
+            violationCount: state.violationCount,
             savedAt: new Date().toISOString()
         };
         localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
@@ -466,6 +468,7 @@ function restoreSession() {
     state.timer.remaining = session.timerRemaining;
     state.timer.duration = session.timerDuration;
     state.startTime = session.startTime ? new Date(session.startTime) : new Date();
+    state.violationCount = session.violationCount || 0;
 
     console.log('✅ Đã khôi phục bài thi');
     return true;
@@ -549,11 +552,78 @@ function init() {
     checkForExistingSession();
 }
 
-function setupElectronGuards() {
-    if (!isElectronRuntime() || typeof window.electronAPI.onForceStayInExam !== 'function') return;
-    window.electronAPI.onForceStayInExam(() => {
-        showToast('Đang trong thời gian thi, không thể thoát ứng dụng.');
+function showViolationModal(count, limit) {
+    const existingModal = document.getElementById('violationModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const isLimitReached = count > limit;
+
+    let title = 'CẢNH BÁO VI PHẠM';
+    let msg = `Bạn đang cố tình thao tác ngoài phần mềm thi!<br>Số lần vi phạm: <strong style="color:#DC2626;font-size:24px;">${count}/${limit}</strong>.<br><br>Yêu cầu quay lại bài thi ngay lập tức. Nếu quá ${limit} lần vi phạm, bài thi sẽ tự động kết thúc!`;
+    let btnText = 'TÔI ĐÃ HIỂU VÀ QUAY LẠI THI';
+
+    if (isLimitReached) {
+        title = 'ĐÌNH CHỈ THI';
+        msg = `Bạn đã vi phạm quy chế thao tác ngoài ứng dụng quá ${limit} lần.<br>Hệ thống tự động đình chỉ và thu bài của bạn!`;
+        btnText = 'KẾT THÚC BÀI THI';
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'violationModal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(185, 28, 28, 0.95);display:flex;align-items:center;justify-content:center;z-index:999999;backdrop-filter:blur(8px);font-family:Tahoma, Arial, sans-serif;';
+
+    modal.innerHTML = `
+        <div style="background:white;padding:45px 40px;border-radius:24px;max-width:650px;width:90%;text-align:center;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div style="font-size:80px;margin-bottom:10px;line-height:1;color:#DC2626;" class="animate-bounce">⚠️</div>
+            <h2 style="color:#DC2626;margin-bottom:20px;font-size:32px;text-transform:uppercase;font-weight:900;letter-spacing:1px;">${title}</h2>
+            <p style="color:#1F2937;font-size:20px;margin-bottom:35px;line-height:1.6;font-weight:500;">${msg}</p>
+            <button id="btnViolationConfirm" style="padding:20px 40px;border:none;background:#DC2626;color:white;border-radius:12px;cursor:pointer;font-size:18px;font-weight:bold;width:100%;text-transform:uppercase;transition:all 0.2s;box-shadow:0 4px 6px -1px rgba(220,38,38,0.4);">
+                ${btnText}
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('btnViolationConfirm').addEventListener('click', () => {
+        modal.remove();
+        if (isLimitReached) {
+            finishQuiz(false); // Terminate exam
+        }
     });
+
+    // Optional: add keydown listener to prevent Enter key closing if limit reached, but we want them to click it or it just stays there.
+}
+
+let lastViolationTime = 0;
+
+function setupElectronGuards() {
+    if (!isElectronRuntime()) return;
+
+    if (typeof window.electronAPI.onForceStayInExam === 'function') {
+        window.electronAPI.onForceStayInExam(() => {
+            showToast('Đang trong thời gian thi, không thể thoát ứng dụng.');
+        });
+    }
+
+    if (typeof window.electronAPI.onExamViolation === 'function') {
+        window.electronAPI.onExamViolation(() => {
+            // Debounce 2 seconds
+            const now = Date.now();
+            if (now - lastViolationTime < 2000) return;
+            lastViolationTime = now;
+
+            // Only count violation if an exam is actively in progress
+            if (!state.timer.interval || state.timer.remaining <= 0) return;
+
+            state.violationCount++;
+            saveSession(); // Save the new violation count immediately
+
+            showViolationModal(state.violationCount, 3);
+        });
+    }
 }
 
 async function checkForExistingSession() {
@@ -864,6 +934,7 @@ function startQuiz() {
 
     // Record start time
     state.startTime = new Date();
+    state.violationCount = 0;
 
     // Switch screens
     switchScreen('quiz');
