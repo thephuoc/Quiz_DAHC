@@ -752,6 +752,22 @@ function cleanText(text) {
     return String(text).trim();
 }
 
+function normalizeHeader(text) {
+    return cleanText(text)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '_');
+}
+
+function parseKhongDaoFlag(value) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+        return Math.trunc(value) === 1;
+    }
+    const normalized = normalizeHeader(value);
+    return ['1', '1.0', 'true', 'yes', 'y', 'x', 'co', 'khong_dao'].includes(normalized);
+}
+
 function normalizeDepartmentCode(value) {
     return cleanText(value)
         .toUpperCase()
@@ -923,11 +939,13 @@ ipcMain.handle('import-questions-excel', async () => {
             if (rows.length < 2) continue;
 
             // Find column indices from header
-            const header = rows[0].map(h => String(h).toLowerCase().replace(/\s+/g, '_').trim());
+            const header = rows[0].map(h => normalizeHeader(h));
             const sttIdx = header.findIndex(h => h.includes('stt'));
             const noiDungIdx = header.findIndex(h => h.includes('noi') && h.includes('dung'));
             const phanLoaiIdx = header.findIndex(h => h.includes('phan') && h.includes('loai'));
             const dapAnDungIdx = header.findIndex(h => (h.includes('dung') && h.includes('dap')) || (h.includes('dap') && h.includes('an') && h.includes('dung')));
+            const cauHoiIdx = header.findIndex(h => (h.includes('cau') && h.includes('hoi')) || h === 'ch');
+            const khongDaoIdx = header.findIndex(h => h.includes('khong') && h.includes('dao'));
 
             if (sttIdx < 0 || noiDungIdx < 0) continue;
 
@@ -957,6 +975,11 @@ ipcMain.handle('import-questions-excel', async () => {
                     if (cat) category = cat;
                 }
 
+                const cauHoiMarker = cauHoiIdx >= 0 ? cleanText(rows[start][cauHoiIdx]) : 'CH';
+                const doNotShuffleOptions = khongDaoIdx >= 0 && cauHoiMarker
+                    ? parseKhongDaoFlag(rows[start][khongDaoIdx])
+                    : false;
+
                 const options = [];
                 let correctIdx = -1;
 
@@ -980,6 +1003,7 @@ ipcMain.handle('import-questions-excel', async () => {
                         options: finalOptions,
                         correct: correctIdx,
                         category,
+                        doNotShuffleOptions,
                         id: questionId++,
                     });
                 }

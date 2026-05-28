@@ -158,6 +158,7 @@ function buildExamResult(correctAnswers, totalQuestions, isPassed, timeUp = fals
             cat: q.category,
             ua: state.answers[q.id] !== undefined ? state.answers[q.id] : -1,
             ca: q.correct,
+            order: getOptionDisplayMap(q),
             ok: state.answers[q.id] === q.correct
         })),
         savedAt: new Date().toISOString()
@@ -829,9 +830,9 @@ function handleQuestionContainerClick(event) {
     const optionItem = event.target.closest('[data-action="select-option"]');
     if (optionItem) {
         const questionId = Number(optionItem.dataset.questionId);
-        const optionIndex = Number(optionItem.dataset.optionIndex);
-        if (!Number.isNaN(questionId) && !Number.isNaN(optionIndex)) {
-            selectOption(questionId, optionIndex);
+        const originalIndex = Number(optionItem.dataset.originalIndex);
+        if (!Number.isNaN(questionId) && !Number.isNaN(originalIndex)) {
+            selectOption(questionId, originalIndex);
         }
     }
 }
@@ -841,9 +842,9 @@ function handleQuestionContainerChange(event) {
     if (!optionInput) return;
 
     const questionId = Number(optionInput.dataset.questionId);
-    const optionIndex = Number(optionInput.dataset.optionIndex);
-    if (!Number.isNaN(questionId) && !Number.isNaN(optionIndex)) {
-        selectOption(questionId, optionIndex);
+    const originalIndex = Number(optionInput.dataset.originalIndex);
+    if (!Number.isNaN(questionId) && !Number.isNaN(originalIndex)) {
+        selectOption(questionId, originalIndex);
     }
 }
 
@@ -907,6 +908,58 @@ function showLoginError(message) {
     }
 }
 
+function shouldKeepOptionOrder(question) {
+    return Boolean(question && (
+        question.doNotShuffleOptions === true ||
+        question.khongDao === true ||
+        question.noShuffleOptions === true
+    ));
+}
+
+function createOptionShuffleMap(question) {
+    const optionCount = Array.isArray(question?.options) ? question.options.length : 0;
+    const indices = Array.from({ length: optionCount }, (_value, index) => index);
+
+    if (shouldKeepOptionOrder(question)) {
+        return indices;
+    }
+
+    for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    return indices;
+}
+
+function prepareQuestionsForExam(questions) {
+    return (questions || []).map(question => {
+        const prepared = {
+            ...question,
+            options: Array.isArray(question.options) ? [...question.options] : []
+        };
+        prepared.shuffleMap = createOptionShuffleMap(prepared);
+        return prepared;
+    });
+}
+
+function getOptionDisplayMap(question) {
+    const optionCount = Array.isArray(question?.options) ? question.options.length : 0;
+    const fallback = Array.from({ length: optionCount }, (_value, index) => index);
+    if (!Array.isArray(question?.shuffleMap)) {
+        return fallback;
+    }
+
+    const seen = new Set();
+    const displayMap = question.shuffleMap.filter(index => {
+        const valid = Number.isInteger(index) && index >= 0 && index < optionCount && !seen.has(index);
+        if (valid) seen.add(index);
+        return valid;
+    });
+
+    return displayMap.length === optionCount ? displayMap : fallback;
+}
+
 // ===== Quiz Logic =====
 function startQuiz() {
     // Load settings and get random questions based on settings
@@ -915,7 +968,7 @@ function startQuiz() {
     const durationMinutes = settings.durationMinutes || 30;
 
     // Get random questions with category settings
-    state.questions = getRandomQuestions(totalQuestions, settings.categories);
+    state.questions = prepareQuestionsForExam(getRandomQuestions(totalQuestions, settings.categories));
 
     // Update timer duration
     state.timer.duration = durationMinutes * 60;
@@ -963,6 +1016,10 @@ function renderQuestion() {
     const question = state.questions[state.currentIndex];
     const selectedAnswer = state.answers[question.id];
     const isFlagged = state.questionStatus[question.id] === 'flagged';
+    const shuffleMap = getOptionDisplayMap(question);
+    const selectedDisplayIdx = selectedAnswer !== undefined
+        ? shuffleMap.indexOf(selectedAnswer)
+        : -1;
 
     const optionLabels = ['A', 'B', 'C', 'D'];
 
@@ -981,23 +1038,29 @@ function renderQuestion() {
             <div class="question-content">
                 <p class="question-text">${question.question}</p>
                 <div class="options-list">
-                    ${question.options.map((option, idx) => `
-                        <label class="option-item ${selectedAnswer === idx ? 'selected' : ''}" 
+                    ${shuffleMap.map((originalIdx, displayIdx) => {
+                        const option = question.options[originalIdx];
+                        const isSelected = displayIdx === selectedDisplayIdx;
+                        return `
+                        <label class="option-item ${isSelected ? 'selected' : ''}" 
                                data-action="select-option"
                                data-question-id="${question.id}"
-                               data-option-index="${idx}">
+                               data-option-index="${displayIdx}"
+                               data-original-index="${originalIdx}">
                             <input type="radio" 
                                    name="question_${question.id}" 
-                                   value="${idx}"
+                                   value="${displayIdx}"
                                    data-action="select-option-input"
                                    data-question-id="${question.id}"
-                                   data-option-index="${idx}"
-                                   ${selectedAnswer === idx ? 'checked' : ''}>
+                                   data-option-index="${displayIdx}"
+                                   data-original-index="${originalIdx}"
+                                   ${isSelected ? 'checked' : ''}>
                             <span class="option-radio"></span>
-                            <span class="option-label">${optionLabels[idx]}.</span>
+                            <span class="option-label">${optionLabels[displayIdx]}.</span>
                             <span class="option-text">${option}</span>
                         </label>
-                    `).join('')}
+                    `;
+                    }).join('')}
                 </div>
             </div>
         </div>
@@ -1414,14 +1477,15 @@ async function _generatePDFDoc(footerNote) {
     state.questions.forEach((question, index) => {
         const userAnswerIndex = state.answers[question.id];
         const isCorrect = userAnswerIndex === question.correct;
+        const optionDisplayMap = getOptionDisplayMap(question);
         if (isCorrect) correctAnswers++;
 
         questionResults.push({
             index: index + 1,
             question: question.question,
-            options: question.options,
-            userAnswer: userAnswerIndex !== undefined ? userAnswerIndex : -1,
-            correctAnswer: question.correct,
+            options: optionDisplayMap.map(originalIdx => question.options[originalIdx]),
+            userAnswer: userAnswerIndex !== undefined ? optionDisplayMap.indexOf(userAnswerIndex) : -1,
+            correctAnswer: optionDisplayMap.indexOf(question.correct),
             isCorrect: isCorrect
         });
     });

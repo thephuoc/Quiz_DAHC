@@ -1140,11 +1140,20 @@ ${item.exam?.timeUp ? '⚠️ Hết giờ: Có' : ''}
                 const examQuestions = (item.answersSummary || []).map(summary => {
                     const qObj = QUESTION_BANK.find(q => q.id === summary.id);
                     if (!qObj) return null;
+                    const fallbackOrder = qObj.options.map((_opt, index) => index);
+                    const savedOrder = Array.isArray(summary.order) ? summary.order : fallbackOrder;
+                    const seen = new Set();
+                    const optionOrder = savedOrder.filter(index => {
+                        const valid = Number.isInteger(index) && index >= 0 && index < qObj.options.length && !seen.has(index);
+                        if (valid) seen.add(index);
+                        return valid;
+                    });
+                    const displayOrder = optionOrder.length === qObj.options.length ? optionOrder : fallbackOrder;
                     return {
                         question: qObj.question,
-                        options: qObj.options,
-                        userAnswer: summary.ua,
-                        correctAnswer: summary.ca,
+                        options: displayOrder.map(originalIdx => qObj.options[originalIdx]),
+                        userAnswer: summary.ua >= 0 ? displayOrder.indexOf(summary.ua) : -1,
+                        correctAnswer: displayOrder.indexOf(summary.ca),
                         isCorrect: summary.ok
                     };
                 }).filter(q => q !== null);
