@@ -666,8 +666,8 @@ const QUESTION_BANK = [
     "options": [
       "Dùng nước xịt trực tiếp vào khu vực nghi có cháy",
       "Báo động, báo trưởng ca, cô lập điện theo quy trình",
-      "Đáp án C",
-      "Đáp án D"
+      "Mở cửa thông gió cho bay mùi",
+      "Tiếp tục theo dõi, chưa cần xử lý"
     ],
     "correct": 1,
     "category": "PCCC",
@@ -679,8 +679,8 @@ const QUESTION_BANK = [
     "options": [
       "Dùng nước phun mạnh",
       "Dùng cát hoặc bọt chữa cháy",
-      "Đáp án C",
-      "Đáp án D"
+      "Dùng CO₂ xịt liên tục",
+      "Dùng giẻ thấm dầu"
     ],
     "correct": 1,
     "category": "PCCC",
